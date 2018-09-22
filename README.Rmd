@@ -1,0 +1,27 @@
+---
+output:
+  github_document:
+    html_preview: false
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+## Overview
+
+Some stupid text.
+
+## Installation
+
+```{r, eval = FALSE}
+install.packages("prais")
+```
+
+### Development version
+
+To get a bug fix, or use a feature from the development version, you can install 
+prais from GitHub.
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("franzmohr/prais")
+```
