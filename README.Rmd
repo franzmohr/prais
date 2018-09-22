@@ -6,6 +6,8 @@ output:
 
 # prais
 
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+
 ## Overview
 
 Some stupid text.

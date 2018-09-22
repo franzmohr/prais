@@ -2,6 +2,8 @@
 prais
 =====
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+
 Overview
 --------
 
