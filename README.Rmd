@@ -10,32 +10,41 @@ output:
 
 ## Overview
 
-`prais` implements the Prais-Winsten estimator for models with strictly exogenous regressors and AR(1) serial correlation of the errors.
+prais implements the Prais-Winsten estimator for models with strictly exogenous regressors and AR(1) serial correlation of the errors.
 
 ## Installation
 
 ### CRAN
 
-```{r, eval = FALSE}
+```{r cran, eval = FALSE}
 install.packages("prais")
 ```
 
 ### Development version
 
-```{r, eval = FALSE}
+```{r github, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("franzmohr/prais")
 ```
 
 ## Usage
 
-```{r, message = FALSE}
+```{r usage, message = FALSE}
 library(prais)
-library(wooldridge)
 
+# Load data
+library(wooldridge) # install.packages("wooldridge")
 data("barium")
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
+```
 
-coefficients(pw)
+Plot the coefficients
+```{r coefs}
+pw$coefficients
+```
+
+Plot $\rho$
+```{r rho, message = FALSE}
+pw$rho
 ```
