@@ -1,24 +1,21 @@
----
-output:
-  github_document:
-    html_preview: false
----
 
-## Overview
+Overview
+--------
 
 Some stupid text.
 
-## Installation
+Installation
+------------
 
 ### CRAN
 
-```{r, eval = FALSE}
+``` r
 install.packages("prais")
 ```
 
 ### Development version
 
-```{r, eval = FALSE}
+``` r
 # install.packages("devtools")
 devtools::install_github("franzmohr/prais")
 ```
