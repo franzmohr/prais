@@ -1,14 +1,15 @@
 #' Prais-Winsten Estimator for AR(1) Serial Correlation
 #'
-#' The Prais-Winsten estimator takes into account serial correlation of type AR(1) in a linear model.
-#' The procedure recursively estimates the beta coefficients and the error autocorrelation
-#' of the specified model until sufficient convergence of rho, i.e. the AR(1) coefficient, is attained. All estimates are obtained by OLS.
+#' The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
+#' in a linear regression model. The procedure recursively estimates the coefficients
+#' and the error autocorrelation of the specified model until sufficient convergence of
+#' the AR(1) coefficient is attained. All estimates are obtained by OLS.
 #'
 #' @param formula an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
-#' @param max_iter integer specifying the maximum number of iterations.
-#' @param tol double the maximum (positive) value of the absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence and to stop the estimation. If not specified the value 1e-06 is used.
-#' @param twostep logical specifying if estimation should stop after the first iteration.
-#' @param ... further arguments passed on to \code{lm}.
+#' @param max_iter integer specifying the maximum number of iterations. The default is 50.
+#' @param tol numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. The default is 1e-6.
+#' @param twostep logical. If \code{TRUE}, the estimation will stop after the first iteration.
+#' @param ... additional arguments to be passed to \code{lm}.
 #'
 #' @references
 #' Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
@@ -16,7 +17,7 @@
 #' Wooldridge, J. M. (2013): Introductory Econometrics. A Modern Approach. 5th ed. Mason, OH: South-Western Cengage Learning Cengage.
 #'
 #'@export
-prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, ...){
+prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, ...){
   cl <- match.call()
   lm_temp <- stats::lm(formula = formula, ...)
   mod <- lm_temp$model
