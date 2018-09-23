@@ -66,7 +66,7 @@ prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, .
     fit <- as.matrix(mod[, -1]) %*% lm_temp$coefficients
     res <- mod[, y_name] - fit
     res_lag <- c(NA, res[-n])
-    print(paste("Iteration ", i, ": rho = ", round(rho, 4), sep = ""))
+    cat("Iteration ", i, ": rho = ", round(rho, 4), "\n", sep = "")
     i <- i + 1
     if (i - 1 == max_iter & !twostep) {message("Estimation was stopped, because the maximum number of iterations was reached.")}
   }

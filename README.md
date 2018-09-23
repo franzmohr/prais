@@ -40,13 +40,13 @@ data("barium")
 pw <- prais.winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
 ```
 
-    ## [1] "Iteration 1: rho = 0.2708"
-    ## [1] "Iteration 2: rho = 0.291"
-    ## [1] "Iteration 3: rho = 0.293"
-    ## [1] "Iteration 4: rho = 0.2932"
-    ## [1] "Iteration 5: rho = 0.2932"
-    ## [1] "Iteration 6: rho = 0.2932"
-    ## [1] "Iteration 7: rho = 0.2932"
+    ## Iteration 1: rho = 0.2708
+    ## Iteration 2: rho = 0.291
+    ## Iteration 3: rho = 0.293
+    ## Iteration 4: rho = 0.2932
+    ## Iteration 5: rho = 0.2932
+    ## Iteration 6: rho = 0.2932
+    ## Iteration 7: rho = 0.2932
 
 ``` r
 pw
