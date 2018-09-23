@@ -45,7 +45,7 @@ prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, .
 
   rho_last <- 1000
   rho <- 0
-  rho_stats <- data.frame("Iteration" = 0,"rho" = 0)
+  rho_stats <- data.frame("Iteration" = 0, "rho" = 0)
   if (twostep) {max_iter <- 1}
   i <- 1
   while(i <= max_iter & abs(rho - rho_last) > tol) {
@@ -71,9 +71,27 @@ prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, .
     if (i - 1 == max_iter & !twostep) {message("Estimation was stopped, because the maximum number of iterations was reached.")}
   }
 
+  rank <- ncol(mod) - 1
+  df.residual <- n - rank
   coeffs <- lm_temp$coefficients
+
+  y_lm <- lm_temp$mod[, y_name]
+  rss <- sum(lm_temp$residuals^2)
+  sst <- sum((y_lm - mean(y_lm))^2)
+  r.squared <- 1 - rss / sst
+
+  if (intercept) {
+    x_lm <- as.matrix(lm_temp$mod[, c("const", x_name)])
+  } else {
+    x_lm <- as.matrix(lm_temp$mod[, x_name])
+  }
+  cov.unscaled <- rss / df.residual * solve(crossprod(x_lm))
+
   if (intercept) {
     names(coeffs)[which(names(coeffs) == "const")] <- "(Intercept)"
+    pos_intercept <- which(dimnames(cov.unscaled)[[1]] == "const")
+    dimnames(cov.unscaled)[[1]][pos_intercept] <- "(Intercept)"
+    dimnames(cov.unscaled)[[2]][pos_intercept] <- "(Intercept)"
     mod <- mod[, -which(names(mod) == "const")]
   }
   row.names(rho_stats) <- NULL
@@ -84,9 +102,13 @@ prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, .
 
   result <- list("coefficients" = coeffs,
                  "rho" = rho_stats,
-                 "residuals" = res,
-                 "fitted.values" = fit,
+                 "residuals" = lm_temp$residuals,
+                 "rank" = rank,
+                 "fitted.values" = lm_temp$fitted.values,
+                 "df.residual" = df.residual,
                  "call" = cl,
+                 "cov.unscaled" = cov.unscaled,
+                 "r.squared" = r.squared,
                  "model" = mod)
   class(result) <- append(class(result), "prais")
   return(result)
