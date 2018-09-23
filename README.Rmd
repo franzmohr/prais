@@ -14,7 +14,7 @@ prais implements the Prais-Winsten estimator for models with strictly exogenous 
 
 ## Installation
 
-### CRAN
+### CRAN 
 
 ```{r cran, eval = FALSE}
 install.packages("prais")
@@ -28,6 +28,8 @@ devtools::install_github("franzmohr/prais")
 ```
 
 ## Usage
+
+The following code uses the development version.
 
 ```{r usage, message = FALSE}
 library(prais)

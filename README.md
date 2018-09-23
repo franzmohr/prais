@@ -28,6 +28,8 @@ devtools::install_github("franzmohr/prais")
 Usage
 -----
 
+The following code uses the development version.
+
 ``` r
 library(prais)
 
