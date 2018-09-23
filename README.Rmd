@@ -36,15 +36,6 @@ library(prais)
 library(wooldridge) # install.packages("wooldridge")
 data("barium")
 
-pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
-```
-
-Plot the coefficients
-```{r coefs}
-pw$coefficients
-```
-
-Plot $\rho$
-```{r rho, message = FALSE}
-pw$rho
+pw <- prais.winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
+pw
 ```
