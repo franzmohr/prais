@@ -335,8 +335,9 @@ pw
     ## 130 6.844815
     ## 131 6.943264
     ## 
-    ## $equation
-    ## [1] "lchnimp = (Intercept) + lchempi + lgas + lrtwex + befile6 + affile6 + afdec6 + error"
+    ## $call
+    ## prais.winsten(formula = lchnimp ~ lchempi + lgas + lrtwex + befile6 + 
+    ##     affile6 + afdec6, data = barium)
     ## 
     ## $model
     ##      lchnimp  lchempi     lgas   lrtwex befile6 affile6 afdec6

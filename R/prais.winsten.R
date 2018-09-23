@@ -17,8 +17,8 @@
 #'
 #'@export
 prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, ...){
+  cl <- match.call()
   lm_temp <- stats::lm(formula = formula, ...)
-  #lm_temp <- stats::lm(formula = formula, data = data)
   mod <- lm_temp$model
 
   intercept <- "(Intercept)" %in% names(lm_temp$coefficients)
@@ -78,19 +78,16 @@ prais.winsten <- function(formula, max_iter = 50, tol = 1e-6, twostep = FALSE, .
   }
   row.names(rho_stats) <- NULL
 
-
   if (intercept) {
     x_name <- c("(Intercept)", x_name)
   }
 
-  result <- list(
-    "coefficients" = coeffs,
-    "rho" = rho_stats,
-    "residuals" = res,
-    "fitted.values" = fit,
-    "equation" = paste(y_name, " = ", paste(c(x_name, "error"), collapse = " + "), sep = ""),
-    "model" = mod
-  )
-  class(result) <- "prais"
+  result <- list("coefficients" = coeffs,
+                 "rho" = rho_stats,
+                 "residuals" = res,
+                 "fitted.values" = fit,
+                 "call" = cl,
+                 "model" = mod)
+  class(result) <- append(class(result), "prais")
   return(result)
 }

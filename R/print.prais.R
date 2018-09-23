@@ -1,5 +1,7 @@
+#' @export
 print.prais <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
-  cat("\nEquation:\n", x$equation, "\n\n", sep = "")
+  cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
   if (length(x$coefficients)) {
     cat("Coefficients:\n")
     print.default(format.default(x$coefficients, digits = digits),
@@ -12,4 +14,3 @@ print.prais <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
       "\n\n", sep = "")
   invisible(x)
 }
-print
