@@ -1,5 +1,23 @@
+#' Summarising the Prais-Winsten Estimator
+#'
+#' summary method for class "prais".
+#'
+#' @param object an object of class "prais", usually, a result of a call to \code{\link{prais.winsten}}.
+#'
+#' @return a list of summary statistics:
+#' \item{call}{}
+#' \item{residuals}{}
+#' \item{coefficients}{}
+#' \item{rho}{}
+#' \item{sigma}{}
+#' \item{df}{}
+#' \item{r.squared}{}
+#' \item{adj.r.squared}{}
+#' \item{fstatistic}{}
+#' \item{cov.unscaled}{}#'
+#'
 #' @export
-summary.prais <- function(object, ...){
+summary.prais <- function(object){
   cl <- object$call
   p <- object$rank
   rdf <- object$df.residual

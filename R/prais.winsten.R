@@ -11,10 +11,39 @@
 #' @param twostep logical. If \code{TRUE}, the estimation will stop after the first iteration.
 #' @param ... additional arguments to be passed to \code{lm}.
 #'
+#' @return a list of class "prais" containing the following components:
+#' \item{coefficients}{a named vector of coefficients.}
+#' \item{rho}{a named matrix of rho from all iterations of the estimator.}
+#' \item{residuals}{the residuals, that is response minus the fitted values, of the last iteration.}
+#' \item{rank}{the numeric rank of the fitted linear model.}
+#' \item{fitted.values}{the fitted mean values of the last iteration.}
+#' \item{df.residual}{the residual degrees of freedom.}
+#' \item{call}{the matched call.}
+#' \item{cov.unscaled}{the unscaled variance-covariance matrix.}
+#' \item{r.squared}{R^2, the 'fraction of variance explained by the model'.}
+#' \item{model}{the original model frame before the application of the Prais-Winsten transformation.}
+#'
 #' @references
 #' Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
 #'
 #' Wooldridge, J. M. (2013): Introductory Econometrics. A Modern Approach. 5th ed. Mason, OH: South-Western Cengage Learning Cengage.
+#'
+#' @examples
+#'
+#' # Generate sample
+#' set.seed(1234567)
+#' n <- 100
+#' x <- sample(20:40, n, replace = TRUE)
+#' rho <- .9
+#' u <- rnorm(n, 0, 5)
+#' for (i in 2:n) {
+#'   u[i] <- u[i] + rho * u[i - 1]
+#' }
+#' pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u)
+#'
+#' # Estimate
+#' pw <- prais.winsten(y ~ x, data = pw_sample)
+#' summary(pw)
 #'
 #'@export
 prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, ...){
@@ -46,14 +75,14 @@ prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
 
   rho_last <- 1000
   rho <- 0
-  rho_stats <- data.frame("Iteration" = 0, "rho" = 0)
+  rho_stats <- c(0)
   if (twostep) {max_iter <- 1}
   i <- 1
   while(i <= max_iter & abs(rho - rho_last) > tol) {
     rho_lm <- stats::lm(res ~ res_lag - 1)
     rho_last <- rho
     rho <- rho_lm$coeff[1]
-    rho_stats <- rbind(rho_stats, data.frame("Iteration" = i, "rho" = rho))
+    rho_stats <- append(rho_stats, rho)
 
     sample_temp[, y_name] <- c((1 - rho^2)^(1 / 2) * mod[1, y_name], mod[pos_t, y_name] - rho * mod[pos_t_lag, y_name])
     if (intercept) {
@@ -79,7 +108,8 @@ prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
   y_lm <- lm_temp$mod[, y_name]
   rss <- sum(lm_temp$residuals^2)
   sst <- sum((y_lm - mean(y_lm))^2)
-  r.squared <- 1 - rss / sst
+  mss <- sst - rss
+  r.squared <-  mss / sst
 
   if (intercept) {
     x_lm <- as.matrix(lm_temp$mod[, c("const", x_name)])
@@ -95,7 +125,7 @@ prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
     dimnames(cov.unscaled)[[2]][pos_intercept] <- "(Intercept)"
     mod <- mod[, -which(names(mod) == "const")]
   }
-  row.names(rho_stats) <- NULL
+  rho_stats <- matrix(rho_stats, dimnames = list(0:(length(rho_stats) - 1), "rho"))
 
   if (intercept) {
     x_name <- c("(Intercept)", x_name)
@@ -111,6 +141,6 @@ prais.winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
                  "cov.unscaled" = cov.unscaled,
                  "r.squared" = r.squared,
                  "model" = mod)
-  class(result) <- append(class(result), "prais")
+  class(result) <- "prais"
   return(result)
 }

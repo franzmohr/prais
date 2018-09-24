@@ -17,11 +17,33 @@ prais.winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE, ...)
 
 \item{...}{additional arguments to be passed to \code{lm}.}
 }
+\value{
+a list of class "prais", which contains the following components:
+\item{coefficients}{a named vector of coefficients}
+}
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
 in a linear regression model. The procedure recursively estimates the coefficients
 and the error autocorrelation of the specified model until sufficient convergence of
 the AR(1) coefficient is attained. All estimates are obtained by OLS.
+}
+\examples{
+
+# Generate sample
+set.seed(1234567)
+n <- 100
+x <- sample(20:40, n, replace = TRUE)
+rho <- .9
+u <- rnorm(n, 0, 5)
+for (i in 2:n) {
+  u[i] <- u[i] + rho * u[i - 1]
+}
+pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u)
+
+# Estimate
+pw <- prais.winsten(y ~ x, data = pw_sample)
+summary(pw)
+
 }
 \references{
 Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
