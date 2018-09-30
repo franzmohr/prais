@@ -9,7 +9,7 @@ pw_transform(data, rho, intercept = TRUE)
 \arguments{
 \item{data}{a named matrix containing the data, which should be transformed.}
 
-\item{rho}{a numeric of the AR(1) serial correlation coefficient \eqn{\rho}.}
+\item{rho}{the AR(1) serial correlation coefficient \eqn{\rho}.}
 
 \item{intercept}{logal. If TRUE (default) a column of intercept values is added.}
 }

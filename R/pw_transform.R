@@ -3,7 +3,7 @@
 #' Performs the Prais-Winsten transformation for a given data set.
 #'
 #' @param data a named matrix containing the data, which should be transformed.
-#' @param rho a numeric of the AR(1) serial correlation coefficient \eqn{\rho}.
+#' @param rho the AR(1) serial correlation coefficient \eqn{\rho}.
 #' @param intercept logal. If TRUE (default) a column of intercept values is added.
 #'
 #' @return a named matrix.
