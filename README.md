@@ -37,9 +37,10 @@ library(prais)
 library(wooldridge) # install.packages("wooldridge")
 data("barium")
 
-pw <- prais.winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
+pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
 ```
 
+    ## Iteration 0: rho = 0
     ## Iteration 1: rho = 0.2708
     ## Iteration 2: rho = 0.291
     ## Iteration 3: rho = 0.293
@@ -54,12 +55,12 @@ summary(pw)
 
     ## 
     ## Call:
-    ## prais.winsten(formula = lchnimp ~ lchempi + lgas + lrtwex + befile6 + 
+    ## prais_winsten(formula = lchnimp ~ lchempi + lgas + lrtwex + befile6 + 
     ##     affile6 + afdec6, data = barium)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -2.01146 -0.39152  0.06758  0.35063  1.35021 
+    ## -1.99386 -0.32219  0.03747  0.40226  1.50281 
     ## 
     ## AR(1) Coefficient rho after 7 Iterations: 0.2932
     ## 
@@ -77,4 +78,7 @@ summary(pw)
     ## 
     ## Residual standard error: 0.5733 on 124 degrees of freedom
     ## Multiple R-squared:  0.2021, Adjusted R-squared:  0.1635 
-    ## F-statistic: 31.41 on 1 and 124 DF,  p-value: 1.285e-07
+    ## F-statistic: 5.235 on 6 and 124 DF,  p-value: 7.764e-05
+    ## 
+    ## Durbin-Watson statistic (original): 1.458 
+    ## Durbin-Watson statistic (transformed): 2.087
