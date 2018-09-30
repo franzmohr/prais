@@ -3,4 +3,5 @@
 S3method(print,prais)
 S3method(print,summary.prais)
 S3method(summary,prais)
-export(prais.winsten)
+export(prais_winsten)
+export(pw_transform)

@@ -1,3 +1,6 @@
+#' @include summary.prais.R
+#' @rdname summary.prais
+#'
 #' @export
 print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
                                 signif.stars = getOption("show.signif.stars"), ...){
@@ -22,9 +25,13 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
   rho <- rho[length(rho)]
   cat("\nAR(1) Coefficient rho after ", n_iter,
       " Iterations: ", formatC(rho, digits = digits), "\n", sep = "")
-  cat("\nCoefficients:\n")
-  coefs <- x$coefficients
-  stats::printCoefmat(coefs, digits = digits, signif.stars = signif.stars, na.print = "NA", ...)
+  if (length(x$coefficients)) {
+    cat("\nCoefficients:\n")
+    coefs <- x$coefficients
+    stats::printCoefmat(coefs, digits = digits, signif.stars = signif.stars, na.print = "NA", ...)
+  } else {
+    cat("\nNo coefficients\n")
+  }
   cat("\nResidual standard error:",
       format.default(signif(x$sigma, digits)), "on", rdf, "degrees of freedom")
   cat("\n")
@@ -34,10 +41,14 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
         "\nF-statistic:", formatC(x$fstatistic[1L], digits = digits),
         "on", x$fstatistic[2L],
         "and", x$fstatistic[3L],
-        "DF,  p-value:", format.pval(stats::pf(x$fstatistic[1L],
-                                               x$fstatistic[2L],
-                                               x$fstatistic[3L],
-                                               lower.tail = FALSE), digits = digits))
+        "DF,  p-value:", format.pval(stats::pf(x$fstatistic[1L], x$fstatistic[2L],
+                                               x$fstatistic[3L], lower.tail = FALSE),
+                                     digits = digits))
+    cat("\n")
+  }
+  if(!is.null(x$dw)) {
+    cat("\nDurbin-Watson statistic (original):", formatC(x$dw["original"], digits = digits),
+        "\nDurbin-Watson statistic (transformed):", formatC(x$dw["transformed"], digits = digits))
     cat("\n")
   }
   cat("\n")

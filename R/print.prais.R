@@ -1,3 +1,9 @@
+#' @include prais_winsten.R
+#' @describeIn prais_winsten
+#'
+#' @param x an object of class "prais", usually, a result of a call to \code{\link{prais_winsten}}.
+#' @param digits the number of significant digits to use when printing.
+#'
 #' @export
 print.prais <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
