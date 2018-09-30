@@ -12,9 +12,9 @@ prais_winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE, ...)
 \arguments{
 \item{formula}{an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
 
-\item{max_iter}{integer specifying the maximum number of iterations. The default is 50.}
+\item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
-\item{tol}{numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. The default is 1e-6.}
+\item{tol}{numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. Default is 1e-6.}
 
 \item{twostep}{logical. If \code{TRUE}, the estimation will stop after the first iteration.}
 

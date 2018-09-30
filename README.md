@@ -31,11 +31,11 @@ Usage
 The following code uses the development version.
 
 ``` r
-library(prais)
-
-# Load data
-library(wooldridge) # install.packages("wooldridge")
+# install.packages("wooldridge")
+library(wooldridge) 
 data("barium")
+
+library(prais)
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
 ```

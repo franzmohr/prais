@@ -63,6 +63,7 @@ summary.prais <- function(object, ...){
   fstatistic <- NULL
   if (p > 0) {
     cov.unscaled <- rss / rdf * solve(crossprod(x_pw))
+    dimnames(cov.unscaled) <- list(x_names, x_names)
     df <- c(p, rdf, NCOL(object$qr$qr))
     est <- object$coefficients
     se <- sqrt(diag(cov.unscaled))
@@ -81,7 +82,7 @@ summary.prais <- function(object, ...){
                       dendf = rdf)
     }
 
-    res <- lm.fit(y = mod[, 1], x = as.matrix(mod[, -1]))$residuals
+    res <- stats::lm.fit(y = mod[, 1], x = as.matrix(mod[, -1]))$residuals
   } else {
     res <- mod[, 1]
   }

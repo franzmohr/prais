@@ -6,8 +6,8 @@
 #' the AR(1) coefficient is reached. All estimates are obtained by OLS.
 #'
 #' @param formula an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
-#' @param max_iter integer specifying the maximum number of iterations. The default is 50.
-#' @param tol numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. The default is 1e-6.
+#' @param max_iter integer specifying the maximum number of allowed iterations. Default is 50.
+#' @param tol numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. Default is 1e-6.
 #' @param twostep logical. If \code{TRUE}, the estimation will stop after the first iteration.
 #' @param ... further arguments passed to or from other methods.
 #'
