@@ -15,7 +15,7 @@ print.prais <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
   } else {
     cat("No coefficients\n")
   }
-  cat("\nAR(1) Coefficient rho: ",
+  cat("\nAR(1) coefficient rho: ",
       format.default(c("rho" = x$rho[NROW(x$rho), "rho"]), digits = digits),
       "\n\n", sep = "")
   invisible(x)

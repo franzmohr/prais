@@ -23,7 +23,7 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
   rho <- x$rho[, "rho"]
   n_iter <- length(rho) - 1
   rho <- rho[length(rho)]
-  cat("\nAR(1) Coefficient rho after ", n_iter,
+  cat("\nAR(1) coefficient rho after ", n_iter,
       " Iterations: ", formatC(rho, digits = digits), "\n", sep = "")
   if (length(x$coefficients)) {
     cat("\nCoefficients:\n")
