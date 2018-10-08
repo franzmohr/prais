@@ -29,14 +29,14 @@ devtools::install_github("franzmohr/prais")
 
 ## Usage
 
-The following code uses the development version.
-
 ```{r usage, message = FALSE}
-# install.packages("wooldridge")
-library(wooldridge) 
-data("barium")
-
+# Load the package
 library(prais)
+
+# Load the data
+# install.packages("wooldridge")
+library(wooldridge)
+data("barium")
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
 summary(pw)

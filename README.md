@@ -28,14 +28,14 @@ devtools::install_github("franzmohr/prais")
 Usage
 -----
 
-The following code uses the development version.
-
 ``` r
-# install.packages("wooldridge")
-library(wooldridge) 
-data("barium")
-
+# Load the package
 library(prais)
+
+# Load the data
+# install.packages("wooldridge")
+library(wooldridge)
+data("barium")
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
 ```
@@ -62,7 +62,7 @@ summary(pw)
     ##      Min       1Q   Median       3Q      Max 
     ## -1.99386 -0.32219  0.03747  0.40226  1.50281 
     ## 
-    ## AR(1) coefficient rho after 7 Iterations: 0.2932
+    ## AR(1) Coefficient rho after 7 Iterations: 0.2932
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
