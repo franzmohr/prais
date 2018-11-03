@@ -1,7 +1,7 @@
 #' @include summary.prais.R
-#' @rdname summary.prais
 #'
 #' @export
+#' @rdname summary.prais
 print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
                                 signif.stars = getOption("show.signif.stars"), ...){
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),

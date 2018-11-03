@@ -62,11 +62,11 @@ summary.prais <- function(object, ...){
   adj.r.squared <- NULL
   fstatistic <- NULL
   if (p > 0) {
-    cov.unscaled <- rss / rdf * solve(crossprod(x_pw))
+    cov.unscaled <- solve(crossprod(x_pw))
     dimnames(cov.unscaled) <- list(x_names, x_names)
     df <- c(p, rdf, NCOL(object$qr$qr))
     est <- object$coefficients
-    se <- sqrt(diag(cov.unscaled))
+    se <- sqrt(diag(cov.unscaled) * sigma_sq)
     tval <- est / se
     coeffs <- cbind(`Estimate` = est,
                     `Std. Error` = se,

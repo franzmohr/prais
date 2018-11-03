@@ -41,11 +41,6 @@ in a linear regression model. The procedure recursively estimates the coefficien
 and the error autocorrelation of the specified model until sufficient convergence of
 the AR(1) coefficient is reached. All estimates are obtained by OLS.
 }
-\section{Methods (by generic)}{
-\itemize{
-\item \code{print}: 
-}}
-
 \examples{
 # Generate an artificial sample
 set.seed(1234567)

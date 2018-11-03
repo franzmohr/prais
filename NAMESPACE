@@ -3,5 +3,8 @@
 S3method(print,prais)
 S3method(print,summary.prais)
 S3method(summary,prais)
+S3method(vcov,prais)
+S3method(vcov,summary.prais)
 export(prais_winsten)
 export(pw_transform)
+export(vcovHC.prais)
