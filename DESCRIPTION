@@ -9,7 +9,7 @@ Depends: R (>= 3.2.0)
 Imports: lmtest, sandwich, stats
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 URL: https://github.com/FranzMohr/prais
 BugReports: https://github.com/FranzMohr/prais/issues
 Collate: 

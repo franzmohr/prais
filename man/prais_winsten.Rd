@@ -5,7 +5,8 @@
 \alias{print.prais}
 \title{Prais-Winsten Estimator for AR(1) Serial Correlation}
 \usage{
-prais_winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE, ...)
+prais_winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE,
+  ...)
 
 \method{print}{prais}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }

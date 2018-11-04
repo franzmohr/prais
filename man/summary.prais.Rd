@@ -7,8 +7,8 @@
 \usage{
 \method{summary}{prais}(object, ...)
 
-\method{print}{summary.prais}(x, digits = max(3L, getOption("digits") - 3L),
-  signif.stars = getOption("show.signif.stars"), ...)
+\method{print}{summary.prais}(x, digits = max(3L, getOption("digits") -
+  3L), signif.stars = getOption("show.signif.stars"), ...)
 }
 \arguments{
 \item{object}{an object of class "prais", usually, a result of a call to \code{\link{prais_winsten}}.}

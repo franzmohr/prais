@@ -2,7 +2,7 @@
 prais
 =====
 
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais) [![Build Status](https://travis-ci.org/franzmohr/prais.svg?branch=master)](https://travis-ci.org/franzmohr/prais)
 
 Overview
 --------
@@ -62,7 +62,7 @@ summary(pw)
     ##      Min       1Q   Median       3Q      Max 
     ## -1.99386 -0.32219  0.03747  0.40226  1.50281 
     ## 
-    ## AR(1) Coefficient rho after 7 Iterations: 0.2932
+    ## AR(1) coefficient rho after 7 Iterations: 0.2932
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
