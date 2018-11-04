@@ -18,5 +18,3 @@ Collate:
     'summary.prais.R'
     'print.summary.prais.R'
     'pw_transform.R'
-    'vcov.prais.R'
-    'vcovHC.prais.R'
