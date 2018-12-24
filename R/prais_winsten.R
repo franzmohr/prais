@@ -78,14 +78,27 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
   lm_temp <- stats::lm(formula = formula, data = data, ...)
   mt <- lm_temp$terms
   mt_model <- lm_temp$model
+
+  if (any(grepl(":", names(lm_temp$coefficients)))){
+    mod_names <- names(mt_model)
+    x_names <- names(lm_temp$coefficients)
+    inter_term <- which(grepl(":", x_names))
+    for (i in inter_term){
+      x_name_i <- strsplit(x_names[i], ":")[[1]]
+      mt_model <- cbind(mt_model, mt_model[, x_name_i[1]] * mt_model[, x_name_i[2]])
+      mod_names <- c(mod_names, x_names[i])
+    }
+    names(mt_model) <- mod_names
+  }
+
   mod <- as.matrix(mt_model)
 
   if (!is.null(lm_temp$weights)) {
     stop("prais_winsten does not support weighted least squares yet.")
   }
 
-  n <- NROW(mod)
   intercept <- "(Intercept)" %in% names(lm_temp$coefficients)
+  n <- NROW(mod)
   y_name <- dimnames(mod)[[2]][1]
   x_name <- dimnames(mod)[[2]][-1]
   if (intercept) {
