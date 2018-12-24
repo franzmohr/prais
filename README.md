@@ -82,3 +82,10 @@ summary(pw)
     ## 
     ## Durbin-Watson statistic (original): 1.458 
     ## Durbin-Watson statistic (transformed): 2.087
+
+References
+----------
+
+Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
+
+Wooldridge, J. M. (2016). Introductory Econometrics. A Modern Approach. 6th ed. Mason, OH: South-Western Cengage Learning.

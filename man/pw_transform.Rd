@@ -4,7 +4,7 @@
 \alias{pw_transform}
 \title{Prais-Winsten Transformation}
 \usage{
-pw_transform(data, rho, intercept = TRUE)
+pw_transform(data, rho, intercept = TRUE, groups = NULL)
 }
 \arguments{
 \item{data}{a named matrix containing the data, which should be transformed.}
@@ -12,9 +12,12 @@ pw_transform(data, rho, intercept = TRUE)
 \item{rho}{the AR(1) serial correlation coefficient \eqn{\rho}.}
 
 \item{intercept}{logal. If TRUE (default) a column of intercept values is added.}
+
+\item{groups}{a list containing a vector of positions of each
+id variable as its elements. Only required for panel data.}
 }
 \value{
-a named matrix.
+A named matrix.
 }
 \description{
 Performs the Prais-Winsten transformation for a given data set.

@@ -5,13 +5,15 @@
 \alias{print.prais}
 \title{Prais-Winsten Estimator for AR(1) Serial Correlation}
 \usage{
-prais_winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE,
-  ...)
+prais_winsten(formula, data, max_iter = 50L, tol = 1e-06,
+  twostep = FALSE, index = NULL, ...)
 
 \method{print}{prais}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
 \item{formula}{an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
+
+\item{data}{a data frame containing the variables in the model. If panel data is used, it must also contain the id and time variables.}
 
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
@@ -19,14 +21,16 @@ prais_winsten(formula, max_iter = 50L, tol = 1e-06, twostep = FALSE,
 
 \item{twostep}{logical. If \code{TRUE}, the estimation will stop after the first iteration.}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{index}{a character specifying the id and time variables. Only required for panel data.}
+
+\item{...}{arguments passed to \code{\link[stats]{lm}}.}
 
 \item{x}{an object of class "prais", usually, a result of a call to \code{\link{prais_winsten}}.}
 
 \item{digits}{the number of significant digits to use when printing.}
 }
 \value{
-a list of class "prais" containing the following components:
+A list of class "prais" containing the following components:
 \item{coefficients}{a named vector of coefficients.}
 \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
 \item{residuals}{the residuals, that is the response minus the fitted values.}
@@ -34,7 +38,9 @@ a list of class "prais" containing the following components:
 \item{rank}{the numeric rank of the fitted linear model.}
 \item{df.residual}{the residual degrees of freedom.}
 \item{call}{the matched call.}
+\item{terms}{the terms object used.}
 \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
+\item{index}{a character specifying the id and time variables.}
 }
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
@@ -48,6 +54,8 @@ set.seed(1234567)
 n <- 100
 x <- sample(20:40, n, replace = TRUE)
 rho <- .5
+
+# AR(1) errors
 u <- rnorm(n, 0, 5)
 for (i in 2:n) {
   u[i] <- u[i] + rho * u[i - 1]

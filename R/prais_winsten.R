@@ -6,12 +6,14 @@
 #' the AR(1) coefficient is reached. All estimates are obtained by OLS.
 #'
 #' @param formula an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.
+#' @param data a data frame containing the variables in the model. If panel data is used, it must also contain the id and time variables.
 #' @param max_iter integer specifying the maximum number of allowed iterations. Default is 50.
 #' @param tol numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. Default is 1e-6.
 #' @param twostep logical. If \code{TRUE}, the estimation will stop after the first iteration.
-#' @param ... further arguments passed to or from other methods.
+#' @param index a character specifying the id and time variables. Only required for panel data.
+#' @param ... arguments passed to \code{\link[stats]{lm}}.
 #'
-#' @return a list of class "prais" containing the following components:
+#' @return A list of class "prais" containing the following components:
 #' \item{coefficients}{a named vector of coefficients.}
 #' \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
 #' \item{residuals}{the residuals, that is the response minus the fitted values.}
@@ -19,7 +21,9 @@
 #' \item{rank}{the numeric rank of the fitted linear model.}
 #' \item{df.residual}{the residual degrees of freedom.}
 #' \item{call}{the matched call.}
+#' \item{terms}{the terms object used.}
 #' \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
+#' \item{index}{a character specifying the id and time variables.}
 #'
 #' @references
 #' Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
@@ -32,6 +36,8 @@
 #' n <- 100
 #' x <- sample(20:40, n, replace = TRUE)
 #' rho <- .5
+#'
+#' # AR(1) errors
 #' u <- rnorm(n, 0, 5)
 #' for (i in 2:n) {
 #'   u[i] <- u[i] + rho * u[i - 1]
@@ -43,11 +49,36 @@
 #' summary(pw)
 #'
 #'@export
-prais_winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, ...){
+prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = FALSE, index = NULL, ...){
   cl <- match.call()
-  lm_temp <- stats::lm(formula = formula, ...)
-  #lm_temp <- stats::lm(formula = formula, data = data)
-  mod <- as.matrix(lm_temp$model)
+  data <- as.data.frame(data)
+
+  panel <- FALSE
+  if (!is.null(index)){
+    if (length(index) == 2) {
+      panel <- TRUE
+    }
+  }
+
+  if (panel){
+    data <- data[order(data[, index[2]]), ]
+    data <- data[order(data[, index[1]]), ]
+
+    groups_temp <- unique(data[, index[1]])
+    groups <- c()
+    for (i in 1:length(groups_temp)){
+      pos_temp <- which(data[, index[1]] == groups_temp[i])
+      names(pos_temp) <- NULL
+      groups <- c(groups, list(pos_temp))
+      rm(pos_temp)
+    }
+    rm(groups_temp)
+  }
+
+  lm_temp <- stats::lm(formula = formula, data = data, ...)
+  mt <- lm_temp$terms
+  mt_model <- lm_temp$model
+  mod <- as.matrix(mt_model)
 
   if (!is.null(lm_temp$weights)) {
     stop("prais_winsten does not support weighted least squares yet.")
@@ -66,30 +97,56 @@ prais_winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
     mod_int <- mod
   }
 
-  res <- lm_temp$res[-1]
-  res_lag <- lm_temp$res[-n]
+  if (panel) {
+    res <- c()
+    res_lag <- res
+    for (i in 1:length(groups)){
+      n_temp <- length(groups[[i]])
+      res_temp <- lm_temp$res[groups[[i]]]
+      res <- c(res, res_temp[-1])
+      res_lag <- c(res_lag, res_temp[-n_temp])
+    }
+  } else {
+    res <- lm_temp$res[-1]
+    res_lag <- lm_temp$res[-n]
+    groups <- NULL
+  }
 
   rho_stats <- c(0)
   rho_last <- 1000
   rho <- 0
   if (twostep) {max_iter <- 1}
   i <- 1
-  cat("Iteration ", 0, ": rho = ", round(rho, 4), "\n", sep = "")
+  cat("Iteration 0: rho = ", round(rho, 4), "\n", sep = "")
   while(i <= max_iter & abs(rho - rho_last) > tol) {
     rho_lm <- stats::lm.fit(x = matrix(res_lag), y = matrix(res))
     rho_last <- rho
     rho <- rho_lm$coefficients[1]
     rho_stats <- append(rho_stats, rho)
 
-    sample_temp <- pw_transform(mod, rho, intercept = intercept)
+    sample_temp <- pw_transform(mod, rho, intercept = intercept, groups = groups)
+    sample_temp <- stats::na.omit(sample_temp)
     y_temp <- matrix(sample_temp[, y_name], dimnames = list(NULL, y_name))
-    x_temp <- matrix(sample_temp[, x_name_est], nrow = n, dimnames = list(NULL, x_name_est))
+    x_temp <- matrix(sample_temp[, x_name_est], nrow = NROW(sample_temp), dimnames = list(NULL, x_name_est))
     lm_temp <- stats::lm.fit(y = y_temp, x = x_temp)
 
     fit <- as.matrix(mod_int[, x_name_est]) %*% lm_temp$coefficients
     res_temp <- mod[, y_name] - fit
-    res <- res_temp[-1]
-    res_lag <- res_temp[-n]
+
+    if (panel) {
+      res <- c()
+      res_lag <- res
+      for (j in 1:length(groups)){
+        res_temp_p <- res_temp[groups[[j]]]
+        n_temp <- length(res_temp_p)
+        res <- c(res, res_temp_p[-1])
+        res_lag <- c(res_lag, res_temp_p[-n_temp])
+      }
+    } else {
+      res <- res_temp[-1]
+      res_lag <- res_temp[-n]
+    }
+
     cat("Iteration ", i, ": rho = ", round(rho, 4), "\n", sep = "")
     i <- i + 1
     if (i - 1 == max_iter & !twostep) {message("Estimation was stopped, because the maximum number of iterations was reached.")}
@@ -104,8 +161,23 @@ prais_winsten <- function(formula, max_iter = 50L, tol = 1e-6, twostep = FALSE, 
                  "fitted.values" = c(fit),
                  "df.residual" = lm_temp$df.residual,
                  "call" = cl,
+                 "terms" = mt,
                  "qr" = lm_temp$qr,
-                 "model" = as.data.frame(mod))
+                 "model" = mt_model)
+
+  if (panel) {
+    result$index <- index
+    names_mod <- names(result$model)
+    if (!index[1] %in% names(result$model)) {
+      result$model <- cbind(result$model, data[, index[1]])
+      names_mod <- c(names_mod, index[1])
+    }
+    if (!index[2] %in% names(result$model)) {
+      result$model <- cbind(result$model, data[, index[2]])
+      names_mod <- c(names_mod, index[2])
+    }
+    names(result$model) <- names_mod
+  }
 
   class(result) <- "prais"
   return(result)
