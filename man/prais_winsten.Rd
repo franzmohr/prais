@@ -48,6 +48,13 @@ in a linear regression model. The procedure recursively estimates the coefficien
 and the error autocorrelation of the specified model until sufficient convergence of
 the AR(1) coefficient is reached. All estimates are obtained by OLS.
 }
+\details{
+If \eqn{\rho} takes a value above 1 during the estimation,
+the Prais-Winsten transformation cannot be applied to the first
+observations, because \eqn{(1 - \rho^2)^(1 / 2)} is not real.
+Therefore, the estimator effectively becomes the Cochrane-Orcutt
+estimator in this case.
+}
 \examples{
 # Generate an artificial sample
 set.seed(1234567)

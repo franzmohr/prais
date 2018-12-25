@@ -13,6 +13,12 @@
 #' @param index a character specifying the id and time variables. Only required for panel data.
 #' @param ... arguments passed to \code{\link[stats]{lm}}.
 #'
+#' @details If \eqn{\rho} takes a value above 1 during the estimation,
+#' the Prais-Winsten transformation cannot be applied to the first
+#' observations, because \eqn{(1 - \rho^2)^(1 / 2)} is not real.
+#' Therefore, the estimator effectively becomes the Cochrane-Orcutt
+#' estimator in this case.
+#'
 #' @return A list of class "prais" containing the following components:
 #' \item{coefficients}{a named vector of coefficients.}
 #' \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
