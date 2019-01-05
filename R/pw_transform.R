@@ -2,11 +2,11 @@
 #'
 #' Performs the Prais-Winsten transformation for a given data set.
 #'
-#' @param data a named matrix containing the data, which should be transformed.
+#' @param data a named matrix containing the data that should be transformed.
 #' @param rho the AR(1) serial correlation coefficient \eqn{\rho}.
 #' @param intercept logal. If TRUE (default) a column of intercept values is added.
 #' @param groups a list containing a vector of positions of each
-#' id variable as its elements. Only required for panel data.
+#' ID variable as its elements. Only required for panel data.
 #'
 #' @return A named matrix.
 #'

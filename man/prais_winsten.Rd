@@ -11,17 +11,24 @@ prais_winsten(formula, data, max_iter = 50L, tol = 1e-06,
 \method{print}{prais}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{formula}{an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
+\item{formula}{an object of class "formula" (or one that can be coerced to that class):
+a symbolic description of the model to be fitted.}
 
-\item{data}{a data frame containing the variables in the model. If panel data is used, it must also contain the id and time variables.}
+\item{data}{a data frame containing the variables in the model. If panel data is used,
+it must also contain the ID and time variables.}
 
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
-\item{tol}{numeric specifying the maximum absolute difference between the estimator of rho in the current and the previous iteration that has to be attained to reach convergence. Default is 1e-6.}
+\item{tol}{numeric specifying the maximum absolute difference between the estimator of \eqn{rho}
+in the current and the previous iteration that has to be attained to reach convergence.
+Default is 1e-6.}
 
 \item{twostep}{logical. If \code{TRUE}, the estimation will stop after the first iteration.}
 
-\item{index}{a character specifying the id and time variables. Only required for panel data.}
+\item{index}{a character vector specifying the ID and time variables. If only one variable
+is provided, it is assumed to be the time variable and the data will be reordered
+accordingly. If \code{NULL} (default), the function assumes that the provided sample is
+an ordered time series with the earliest observations in the first row.}
 
 \item{...}{arguments passed to \code{\link[stats]{lm}}.}
 
@@ -40,7 +47,7 @@ A list of class "prais" containing the following components:
 \item{call}{the matched call.}
 \item{terms}{the terms object used.}
 \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
-\item{index}{a character specifying the id and time variables.}
+\item{index}{a character specifying the ID and time variables.}
 }
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
@@ -49,11 +56,11 @@ and the error autocorrelation of the specified model until sufficient convergenc
 the AR(1) coefficient is reached. All estimates are obtained by OLS.
 }
 \details{
-If \eqn{\rho} takes a value above 1 during the estimation,
+If \eqn{\rho} takes a value above 1 during the estimation process,
 the Prais-Winsten transformation cannot be applied to the first
-observations, because \eqn{(1 - \rho^2)^(1 / 2)} is not real.
-Therefore, the estimator effectively becomes the Cochrane-Orcutt
-estimator in this case.
+observations, because \eqn{(1 - \rho^2)^(1 / 2)} is not real. These observations
+are dropped during the respective iteration and the estimator effectively becomes
+the Cochrane-Orcutt estimator.
 }
 \examples{
 # Generate an artificial sample
