@@ -58,7 +58,7 @@ the AR(1) coefficient is reached. All estimates are obtained by OLS.
 \details{
 If \eqn{\rho} takes a value above 1 during the estimation process,
 the Prais-Winsten transformation cannot be applied to the first
-observations, because \eqn{(1 - \rho^2)^(1 / 2)} is not real. These observations
+observations, because \eqn{(1 - \rho^2)^{(1 / 2)}} is not real. These observations
 are dropped during the respective iteration and the estimator effectively becomes
 the Cochrane-Orcutt estimator.
 }

@@ -1,3 +1,7 @@
+# prais 1.1.1
+
+* Small fixes in the documentation of prais_winsten() and summary.prais()
+
 # prais 1.1.0
 
 * Added a `NEWS.md` file to track changes to the package
