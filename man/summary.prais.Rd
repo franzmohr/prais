@@ -37,13 +37,13 @@ the first being the number of non-aliased coefficients, the last being
 the total number of coefficients.}
 \item{r.squared}{R^2, the 'fraction of variance explained by the model',
 \deqn{R^2 = 1 - \dfrac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \overline{y})^2},}
-where \eqn{\overline{y}} is the mean of \eqn{y_i} for \eqn{y_i = 1,...,N}
+where \eqn{\overline{y}} is the mean of \eqn{y_i} for \eqn{y_i = 1, ..., N}
 if there is an intercept and zero otherwise.}
 \item{adj.r.squared}{the above \emph{R^2} statistic \emph{'adjusted'}, penalising
 for higher \emph{p}.}
 \item{fstatistic}{(for models including non-intercept terms) a 3-vector with the
 value of the F-statistic with its numerator and denominator degrees of freedom.}
-\item{cov.unscaled}{a \eqn{p x p} matrix of (unscaled) covariances of the
+\item{cov.unscaled}{a \eqn{p \times p} matrix of (unscaled) covariances of the
 \emph{coef[j], j=1, ..., p}.}
 \item{dw}{a named 2-vector with the Durbin-Watson statistic of the original
 linear model and the Prais-Winsten estimator.}
