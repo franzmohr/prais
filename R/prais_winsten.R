@@ -92,6 +92,16 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
   lm_temp <- stats::lm(formula = formula, data = data, ...)
   mt <- lm_temp$terms
   mt_model <- lm_temp$model
+  if (any(attr(mt, "dataClasses") == "factor")) {
+    y_name <- names(mt_model)[1]
+    if ("(Intercept)" %in% dimnames(stats::model.matrix(lm_temp))[[2]]) {
+      mt_model <- cbind(mt_model[, 1], stats::model.matrix(lm_temp)[, -1])
+    } else {
+      mt_model <- cbind(mt_model[, 1], stats::model.matrix(lm_temp))
+    }
+    dimnames(mt_model)[[2]][1] <- y_name
+    mt_model <- as.data.frame(mt_model)
+  }
 
   if (any(grepl(":", names(lm_temp$coefficients)))){
     mod_names <- names(mt_model)

@@ -1,5 +1,6 @@
 # prais 1.1.1
 
+* Add functionality to expand factors to a set of dummy variables
 * Small fixes in the documentation of prais_winsten() and summary.prais()
 
 # prais 1.1.0
