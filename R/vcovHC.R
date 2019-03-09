@@ -52,6 +52,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     }
 
     pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
+    pw_data <- na.omit(pw_data)
     if (intercept) {
       p_int <- 1L
       sst <- sum((pw_data[, 1] - mean(pw_data[, 1]))^2)
@@ -66,6 +67,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     res <- c(pw_data[, 1] - pw_fit)
     cov.unscaled <- solve(crossprod(x_pw))
 
+    n <- nrow(x_pw)
     switch(type,
            const = {omega <- rep(sum(res^2) / rdf, n)},
            HC0 = {omega <- res^2},
