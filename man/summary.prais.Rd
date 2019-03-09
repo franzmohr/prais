@@ -11,12 +11,12 @@
   3L), signif.stars = getOption("show.signif.stars"), ...)
 }
 \arguments{
-\item{object}{an object of class "prais", usually, a result of a call to
+\item{object}{an object of class \code{"prais"}, usually, a result of a call to
 \code{\link{prais_winsten}}.}
 
 \item{...}{further arguments passed to or from other methods.}
 
-\item{x}{an object of class "summary.prais", usually, a result of a call to
+\item{x}{an object of class \code{"summary.prais"}, usually, a result of a call to
 \code{\link{summary.prais}}.}
 
 \item{digits}{the number of significant digits to use when printing.}
@@ -25,7 +25,7 @@
 for each coefficient.}
 }
 \value{
-\code{summary.prais} returns a list of class "summary.prais",
+\code{summary.prais} returns a list of class \code{"summary.prais"},
 which contains the following components:
 \item{call}{the matched call.}
 \item{residuals}{the residuals, that is the response minus the fitted values.}
@@ -50,5 +50,5 @@ linear model and the Prais-Winsten estimator.}
 \item{index}{a character specifying the ID and time variables.}
 }
 \description{
-summary method for class "prais".
+summary method for class \code{"prais"}.
 }

@@ -1,7 +1,9 @@
 # prais 1.1.1
 
-* Add functionality to expand factors to a set of dummy variables
+* Add function for semirobust standard errors (#2)
+* Add functionality to expand factors to a set of dummy variables (#1)
 * Small fixes in the documentation of prais_winsten() and summary.prais()
+* Changed upper cases in GitHub link to lower cases in DESCRIPTION
 
 # prais 1.1.0
 

@@ -1,17 +1,17 @@
 #' Summarising the Prais-Winsten Estimator
 #'
-#' summary method for class "prais".
+#' summary method for class \code{"prais"}.
 #'
-#' @param object an object of class "prais", usually, a result of a call to
+#' @param object an object of class \code{"prais"}, usually, a result of a call to
 #' \code{\link{prais_winsten}}.
-#' @param x an object of class "summary.prais", usually, a result of a call to
+#' @param x an object of class \code{"summary.prais"}, usually, a result of a call to
 #' \code{\link{summary.prais}}.
 #' @param digits the number of significant digits to use when printing.
 #' @param signif.stars logical. If \code{TRUE}, 'significance stars' are printed
 #' for each coefficient.
 #' @param ... further arguments passed to or from other methods.
 #'
-#' @return \code{summary.prais} returns a list of class "summary.prais",
+#' @return \code{summary.prais} returns a list of class \code{"summary.prais"},
 #' which contains the following components:
 #' \item{call}{the matched call.}
 #' \item{residuals}{the residuals, that is the response minus the fitted values.}
@@ -44,17 +44,25 @@ summary.prais <- function(object, ...){
   rho <- object$rho[NROW(object$rho), "rho"]
   intercept <- "(Intercept)" %in% names(object$coefficients)
 
-  mod <- object$model
+  mt <- object$terms
+  mt_model <- object$model
+  y_orig <- as.matrix(mt_model[, attributes(mt)$response])
+  y_name <- names(mt_model)[attributes(mt)$response]
+  dimnames(y_orig) <- list(NULL, y_name)
+  x_orig <- stats::model.matrix(object$terms, data = object$model)
+
+  mod <- cbind(y_orig, x_orig)
+
   n <- nrow(mod)
   if (is.null(object$index)) {
     panel <- FALSE
     groups <- list(1:n)
   } else {
     index <- object$index
-    groups_temp <- unique(mod[, index[1]])
+    groups_temp <- unique(mt_model[, index[1]])
     groups <- c()
     for (i in 1:length(groups_temp)){
-      pos_temp <- which(mod[, index[1]] == groups_temp[i])
+      pos_temp <- which(mt_model[, index[1]] == groups_temp[i])
       names(pos_temp) <- NULL
       groups <- c(groups, list(pos_temp))
       rm(pos_temp)
@@ -63,20 +71,10 @@ summary.prais <- function(object, ...){
     panel <- TRUE
   }
 
-  if (panel) {
-    names_mod <- names(mod)
-    names_mod <- c(names_mod[1], names_mod[which(names_mod %in% x_names)])
-    mod <- as.data.frame(mod[, names_mod])
-    names(mod) <- names_mod
-  }
-
   pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
   if (intercept) {
     p_int <- 1L
     sst <- sum((pw_data[, 1] - mean(pw_data[, 1], na.rm = TRUE))^2, na.rm = TRUE)
-    nam <- names(mod)
-    mod <- as.matrix(cbind(mod[, 1], 1, mod[, -1]))
-    dimnames(mod) <- list(NULL, c(nam[1], "(Intercept)", nam[-1]))
   } else {
     p_int <- 0L
     sst <- sum(pw_data[, 1]^2)
@@ -140,6 +138,7 @@ summary.prais <- function(object, ...){
   dw <- c(original = dw_orig, transformed = dw_pw)
 
   result <- list("call" = cl,
+                 "terms" = mt,
                  "residuals" = object$residuals,
                  "coefficients" = coeffs,
                  "rho" = object$rho,

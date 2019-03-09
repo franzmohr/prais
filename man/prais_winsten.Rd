@@ -11,7 +11,7 @@ prais_winsten(formula, data, max_iter = 50L, tol = 1e-06,
 \method{print}{prais}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{formula}{an object of class "formula" (or one that can be coerced to that class):
+\item{formula}{an object of class \code{"formula"} (or one that can be coerced to that class):
 a symbolic description of the model to be fitted.}
 
 \item{data}{a data frame containing the variables in the model. If panel data is used,
@@ -37,7 +37,7 @@ an ordered time series with the earliest observations in the first row.}
 \item{digits}{the number of significant digits to use when printing.}
 }
 \value{
-A list of class "prais" containing the following components:
+A list of class \code{"prais"} containing the following components:
 \item{coefficients}{a named vector of coefficients.}
 \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
 \item{residuals}{the residuals, that is the response minus the fitted values.}

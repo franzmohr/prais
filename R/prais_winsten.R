@@ -5,7 +5,7 @@
 #' and the error autocorrelation of the specified model until sufficient convergence of
 #' the AR(1) coefficient is reached. All estimates are obtained by OLS.
 #'
-#' @param formula an object of class "formula" (or one that can be coerced to that class):
+#' @param formula an object of class \code{"formula"} (or one that can be coerced to that class):
 #' a symbolic description of the model to be fitted.
 #' @param data a data frame containing the variables in the model. If panel data is used,
 #' it must also contain the ID and time variables.
@@ -26,7 +26,7 @@
 #' are dropped during the respective iteration and the estimator effectively becomes
 #' the Cochrane-Orcutt estimator.
 #'
-#' @return A list of class "prais" containing the following components:
+#' @return A list of class \code{"prais"} containing the following components:
 #' \item{coefficients}{a named vector of coefficients.}
 #' \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
 #' \item{residuals}{the residuals, that is the response minus the fitted values.}
@@ -175,7 +175,7 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
                  "call" = cl,
                  "terms" = mt,
                  "qr" = lm_temp$qr,
-                 "model" = as.data.frame(mod))
+                 "model" = mt_model)
 
   if (panel) {
     result$index <- index
