@@ -90,63 +90,38 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
   }
 
   lm_temp <- stats::lm(formula = formula, data = data, ...)
-  mt <- lm_temp$terms
-  mt_model <- lm_temp$model
-  if (any(attr(mt, "dataClasses") == "factor")) {
-    y_name <- names(mt_model)[1]
-    if ("(Intercept)" %in% dimnames(stats::model.matrix(lm_temp))[[2]]) {
-      mt_model <- cbind(mt_model[, 1], stats::model.matrix(lm_temp)[, -1])
-    } else {
-      mt_model <- cbind(mt_model[, 1], stats::model.matrix(lm_temp))
-    }
-    dimnames(mt_model)[[2]][1] <- y_name
-    mt_model <- as.data.frame(mt_model)
-  }
-
-  if (any(grepl(":", names(lm_temp$coefficients)))){
-    mod_names <- names(mt_model)
-    x_names <- names(lm_temp$coefficients)
-    inter_term <- which(grepl(":", x_names))
-    for (i in inter_term){
-      x_name_i <- strsplit(x_names[i], ":")[[1]]
-      mt_model <- cbind(mt_model, mt_model[, x_name_i[1]] * mt_model[, x_name_i[2]])
-      mod_names <- c(mod_names, x_names[i])
-    }
-    names(mt_model) <- mod_names
-  }
-
-  mod <- as.matrix(mt_model)
 
   if (!is.null(lm_temp$weights)) {
     stop("prais_winsten does not support weighted least squares yet.")
   }
 
-  intercept <- "(Intercept)" %in% names(lm_temp$coefficients)
-  n <- NROW(mod)
-  y_name <- dimnames(mod)[[2]][1]
-  x_name <- dimnames(mod)[[2]][-1]
-  if (intercept) {
-    x_name_est <- c("(Intercept)", x_name)
-    mod_int <- cbind(mod[, 1], 1, mod[, -1])
-    dimnames(mod_int) <- list(NULL, c(y_name, x_name_est))
-  } else {
-    x_name_est <- x_name
-    mod_int <- mod
-  }
+  mt <- lm_temp$terms
+  mt_model <- lm_temp$model
+  y_orig <- as.matrix(mt_model[, attributes(mt)$response])
+  y_name <- names(mt_model)[attributes(mt)$response]
+  dimnames(y_orig) <- list(NULL, y_name)
+  x_orig <- stats::model.matrix(lm_temp)
+  x_name <- dimnames(x_orig)[[2]]
+  mod <- cbind(y_orig, x_orig)
+  rm(list = c("y_orig", "x_orig"))
 
+  intercept <- "(Intercept)" %in% x_name
+  n <- nrow(mod)
+
+  # Calculate residuals of the first estimation
   if (panel) {
     res <- c()
     res_lag <- res
     for (i in 1:length(groups)){
       n_temp <- length(groups[[i]])
-      res_temp <- lm_temp$res[groups[[i]]]
+      res_temp <- lm_temp$residuals[groups[[i]]]
       res <- c(res, res_temp[-1])
       res_lag <- c(res_lag, res_temp[-n_temp])
     }
   } else {
-    res <- lm_temp$res[-1]
-    res_lag <- lm_temp$res[-n]
-    groups <- NULL
+    res <- lm_temp$residuals[-1]
+    res_lag <- lm_temp$residuals[-n]
+    groups <- list(1:nrow(mod))
   }
 
   rho_last <- 1000
@@ -161,13 +136,13 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
     rho <- rho_lm$coefficients[1]
     rho_stats <- append(rho_stats, rho)
 
-    sample_temp <- pw_transform(mod, rho, intercept = intercept, groups = groups)
+    sample_temp <- .pw_transform(mod, rho, intercept = intercept, groups = groups)
     sample_temp <- stats::na.omit(sample_temp)
-    y_temp <- matrix(sample_temp[, y_name], dimnames = list(NULL, y_name))
-    x_temp <- matrix(sample_temp[, x_name_est], nrow = NROW(sample_temp), dimnames = list(NULL, x_name_est))
+    y_temp <- matrix(sample_temp[, 1], dimnames = list(NULL, y_name))
+    x_temp <- matrix(sample_temp[, -1], nrow = nrow(sample_temp), dimnames = list(NULL, x_name))
     lm_temp <- stats::lm.fit(y = y_temp, x = x_temp)
 
-    fit <- as.matrix(mod_int[, x_name_est]) %*% lm_temp$coefficients
+    fit <- as.matrix(mod[, -1]) %*% lm_temp$coefficients
     res_temp <- mod[, y_name] - fit
 
     if (panel) {
@@ -200,7 +175,7 @@ prais_winsten <- function(formula, data, max_iter = 50L, tol = 1e-6, twostep = F
                  "call" = cl,
                  "terms" = mt,
                  "qr" = lm_temp$qr,
-                 "model" = mt_model)
+                 "model" = as.data.frame(mod))
 
   if (panel) {
     result$index <- index

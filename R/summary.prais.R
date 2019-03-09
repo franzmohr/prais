@@ -45,10 +45,10 @@ summary.prais <- function(object, ...){
   intercept <- "(Intercept)" %in% names(object$coefficients)
 
   mod <- object$model
-  n <- NROW(mod)
+  n <- nrow(mod)
   if (is.null(object$index)) {
     panel <- FALSE
-    groups <- NULL
+    groups <- list(1:n)
   } else {
     index <- object$index
     groups_temp <- unique(mod[, index[1]])
@@ -70,7 +70,7 @@ summary.prais <- function(object, ...){
     names(mod) <- names_mod
   }
 
-  pw_data <- pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
+  pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
   if (intercept) {
     p_int <- 1L
     sst <- sum((pw_data[, 1] - mean(pw_data[, 1], na.rm = TRUE))^2, na.rm = TRUE)
