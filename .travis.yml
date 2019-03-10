@@ -1,7 +1,16 @@
 language: r
 cache: packages
+dist: trusty
+
+branches:
+  only:
+  - master
 
 jobs:
   include:
-  - r: devel
+  - r: 3.2
+  - r: 3.3
+  - r: 3.4
   - r: release
+  - r: devel
+  - os: osx
