@@ -52,7 +52,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     }
 
     pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
-    pw_data <- na.omit(pw_data)
+    pw_data <- stats::na.omit(pw_data)
     if (intercept) {
       p_int <- 1L
       sst <- sum((pw_data[, 1] - mean(pw_data[, 1]))^2)
