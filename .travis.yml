@@ -1,6 +1,7 @@
 language: r
 cache: packages
-dist: trusty
+os: linux
+dist: xenial
 
 branches:
   only:

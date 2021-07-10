@@ -1,3 +1,7 @@
+# prais 1.1.2
+
+* Fix typo in vcovHC.prais
+
 # prais 1.1.1
 
 * Add function for semirobust standard errors (#2)

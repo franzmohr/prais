@@ -9,11 +9,12 @@ License: GPL-2
 Depends: R (>= 3.2.0)
 Imports: lmtest, sandwich, stats
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 URL: https://github.com/franzmohr/prais
 BugReports: https://github.com/franzmohr/prais/issues
 Collate:
     'prais_winsten.R'
+    'predict.prais.R'
     'print.prais.R'
     'summary.prais.R'
     'print.summary.prais.R'
