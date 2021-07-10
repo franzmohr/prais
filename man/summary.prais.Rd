@@ -7,8 +7,12 @@
 \usage{
 \method{summary}{prais}(object, ...)
 
-\method{print}{summary.prais}(x, digits = max(3L, getOption("digits") -
-  3L), signif.stars = getOption("show.signif.stars"), ...)
+\method{print}{summary.prais}(
+  x,
+  digits = max(3L, getOption("digits") - 3L),
+  signif.stars = getOption("show.signif.stars"),
+  ...
+)
 }
 \arguments{
 \item{object}{an object of class \code{"prais"}, usually, a result of a call to
@@ -50,5 +54,5 @@ linear model and the Prais-Winsten estimator.}
 \item{index}{a character specifying the ID and time variables.}
 }
 \description{
-summary method for class \code{"prais"}.
+Summary method for class \code{"prais"}.
 }

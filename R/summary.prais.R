@@ -1,6 +1,6 @@
 #' Summarising the Prais-Winsten Estimator
 #'
-#' summary method for class \code{"prais"}.
+#' Summary method for class \code{"prais"}.
 #'
 #' @param object an object of class \code{"prais"}, usually, a result of a call to
 #' \code{\link{prais_winsten}}.

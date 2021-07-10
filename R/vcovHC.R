@@ -1,6 +1,6 @@
 #' Semirobust Covariance Matrix Estimators
 #'
-#' Semirobust covariance matrix estimators for model of class \code{"prais"}.
+#' Semirobust covariance matrix estimators for models of class \code{"prais"}.
 #'
 #' @param x an object of class \code{"prais"}, usually, the result of a call to \code{\link{prais_winsten}}.
 #' @param type a character string specifying the estimation type.

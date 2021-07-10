@@ -18,7 +18,7 @@ An object of class "matrix" containing the estimate of the asymptotic covariance
 of coefficients.
 }
 \description{
-Semirobust covariance matrix estimators for model of class \code{"prais"}.
+Semirobust covariance matrix estimators for models of class \code{"prais"}.
 }
 \details{
 \code{vcovHC} is a function for estimating a robust covariance matrix of parameters for
