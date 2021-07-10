@@ -56,7 +56,6 @@ predict.prais <- function(object, ..., newdata = NULL) {
     if (!all(vars %in% names(newdata))) {
       stop("Object 'newdata' does not contain all variables of the model.")
     }
-
     newdata <- newdata[, names(object$coefficients)]
     fcst <- c(as.matrix(newdata) %*% matrix(object$coefficients))
   }
