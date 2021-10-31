@@ -1,5 +1,7 @@
 # prais 1.1.2
 
+* Fix Lazy Data
+* Fix declared imports
 * Estimates of rho are bounded to the range [-1, 1]
 * Mandatory specification of argument `prais_winsten$index`
 * Added functionality to estimate panel-specific AR(1) coefficients
