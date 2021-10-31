@@ -56,7 +56,7 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
     n <- length(res)
 
     positions <- mt_model[, index]
-    group_names <- unique(positions[, 1])
+    group_names <- as.character(unique(positions[, 1]))
     timetable <- unique(positions[, 2])
     timetable <- timetable[order(timetable)]
     timetable <- data.frame(timetable)
