@@ -39,11 +39,53 @@ library(prais)
 library(wooldridge)
 data("barium")
 
-pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6, data = barium)
+pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
+                    data = barium, index = "t")
 summary(pw)
 ```
 
+## Robust standard errors
+
+### White's estimator
+
+```{r, message = FALSE}
+library(lmtest)
+
+coeftest(pw, vcov. = vcovHC(pw, "HC1"))
+```
+
+### Panel-corrected standard errors (PCSE)
+
+Estimate a panel model, for which PCSE should be obtained.
+
+```{r, message = FALSE}
+# Example 2 in the documentation of Stata function xtpcse
+
+# Load data
+data <- haven::read_dta("http://www.stata-press.com/data/r14/grunfeld.dta")
+
+# Estimate
+x <- prais_winsten(invest ~ mvalue + kstock, data = data, index = c("company", "year"),
+                   twostep = TRUE, panelwise = TRUE, rhoweight = "T1")
+
+# Results
+summary(x)
+```
+Obtain PCSE by using only those residuals from periods that are common to all panels by setting `pairwise = FALSE`.
+
+```{r}
+coeftest(x, vcov. = vcovPC(x, pairwise = FALSE))
+```
+
+Obtain PCSE by using all observations that can be matched by period between two panels by setting `pairwise = TRUE`.
+
+```{r}
+coeftest(x, vcov. = vcovPC(x, pairwise = TRUE))
+```
+
 ## References
+
+Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.
 
 Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
 
