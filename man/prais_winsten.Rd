@@ -10,10 +10,12 @@
 prais_winsten(
   formula,
   data,
+  index,
   max_iter = 50L,
   tol = 1e-06,
   twostep = FALSE,
-  index = NULL,
+  panelwise = FALSE,
+  rhoweight = c("none", "T", "T1"),
   ...
 )
 
@@ -28,6 +30,10 @@ a symbolic description of the model to be fitted.}
 \item{data}{a data frame containing the variables in the model. If panel data is used,
 it must also contain the ID and time variables.}
 
+\item{index}{a character vector specifying the ID and time variables. If only one variable
+is provided, it is assumed to be the time variable and the data will be reordered
+accordingly.}
+
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
 \item{tol}{numeric specifying the maximum absolute difference between the estimator of \eqn{rho}
@@ -36,10 +42,11 @@ Default is 1e-6.}
 
 \item{twostep}{logical. If \code{TRUE}, the estimation will stop after the first iteration.}
 
-\item{index}{a character vector specifying the ID and time variables. If only one variable
-is provided, it is assumed to be the time variable and the data will be reordered
-accordingly. If \code{NULL} (default), the function assumes that the provided sample is
-an ordered time series with the earliest observations in the first row.}
+\item{panelwise}{logical. If \code{TRUE}, \eqn{\rho} will be calculated for each panel separately.
+Default is \code{FALSE}. Only used for panel data. See 'Details'.}
+
+\item{rhoweight}{character specifying how \eqn{\rho} should be calculated if \code{panelwise = TRUE}.
+See 'Details'.}
 
 \item{...}{further arguments passed to or from other methods.}
 
@@ -81,6 +88,16 @@ the Prais-Winsten transformation cannot be applied to the first
 observations, because \eqn{(1 - \rho^2)^{(1 / 2)}} is not real. These observations
 are dropped during the respective iteration and the estimator effectively becomes
 the Cochrane-Orcutt estimator.
+
+If \code{panelwise = TRUE}, \code{twostep = FALSE} and \code{rhoweight = "none"},
+each individual estimate of \eqn{rho} is re-estimated until convergence is achieved for all coefficients.
+
+If \code{panelwise = TRUE}, the calculation of \eqn{\rho} can be further specified in argument
+\code{rhoweight}. If \code{rhoweight = "none"}, \eqn{\rho} is assumed to be panel-specific. If
+\code{rhoweight = "T"}, \eqn{\rho} is calculated as a weighted mean of panel-specific estimates, where
+the number of available observations per panel, i.e. \eqn{T_i}, is used as weight. If \code{rhoweight = "T1"},
+\eqn{\rho} is calculated as a weighted mean of panel-specific estimates, where the number of available
+observations per panel minus one, i.e. \eqn{T_i - 1}, is used as weight.
 }
 \examples{
 # Generate an artificial sample
@@ -94,10 +111,10 @@ u <- rnorm(n, 0, 5)
 for (i in 2:n) {
   u[i] <- u[i] + rho * u[i - 1]
 }
-pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u)
+pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
 
 # Estimate
-pw <- prais_winsten(y ~ x, data = pw_sample)
+pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
 summary(pw)
 
 # Generate an artificial sample
@@ -111,16 +128,18 @@ u <- rnorm(n, 0, 5)
 for (i in 2:n) {
   u[i] <- u[i] + rho * u[i - 1]
 }
-pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u)
+pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
 
 # Estimate
-pw <- prais_winsten(y ~ x, data = pw_sample)
+pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
 
 # Predict
 fcst <- predict(pw)
 
 }
 \references{
+Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.
+
 Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
 
 Wooldridge, J. M. (2013): Introductory Econometrics. A Modern Approach. 5th ed. Mason, OH: South-Western Cengage Learning Cengage.

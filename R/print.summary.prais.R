@@ -20,11 +20,18 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
     }
     print(rq, digits = digits, ...)
   }
-  rho <- x$rho[, "rho"]
-  n_iter <- length(rho) - 1
-  rho <- rho[length(rho)]
-  cat("\nAR(1) coefficient rho after ", n_iter,
-      " Iterations: ", formatC(rho, digits = digits), "\n", sep = "")
+  rho <- x$rho
+  n_iter <- NROW(rho) - 1
+  rho <- rho[NROW(rho), ]
+  if (length(rho) > 1) {
+    rho <- data.frame("Group" = dimnames(x$rho)[[2]], "rho" = x$rho[NROW(x$rho), ])
+    row.names(rho) <- NULL
+    cat("\nAR(1) coefficients after ", n_iter, " iterations: \n")
+    print(rho, digits = digits, row.names = FALSE, print.gap = 5L)
+  } else {
+    cat("\nAR(1) coefficient rho after ", n_iter,
+        " iterations: ", formatC(rho, digits = digits), "\n", sep = "")
+  }
   if (length(x$coefficients)) {
     cat("\nCoefficients:\n")
     coefs <- x$coefficients

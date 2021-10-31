@@ -21,10 +21,10 @@
 #' for (i in 2:n) {
 #'   u[i] <- u[i] + rho * u[i - 1]
 #' }
-#' pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u)
+#' pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
 #'
 #' # Estimate
-#' pw <- prais_winsten(y ~ x, data = pw_sample)
+#' pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
 #'
 #' # Predict
 #' fcst <- predict(pw)

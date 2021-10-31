@@ -22,7 +22,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
   coeffs <- x$coefficients
   if (length(coeffs) > 0) {
     x_names <- names(coeffs)
-    rho <- x$rho[NROW(x$rho), "rho"]
+    rho <- x$rho[NROW(x$rho), ]
     intercept <- "(Intercept)" %in% names(x$coefficients)
 
     mt <- x$terms
@@ -34,6 +34,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     mod <- cbind(y_orig, x_orig)
 
     n <- nrow(mod)
+    panelwise <- FALSE
     if (is.null(x$index)) {
       panel <- FALSE
       groups <- list(1:n)
@@ -49,6 +50,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
       }
       rm(groups_temp)
       panel <- TRUE
+      if (length(rho) > 1) {panelwise <- TRUE}
     }
 
     pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)

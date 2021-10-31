@@ -4,7 +4,7 @@
 \alias{vcovHC.prais}
 \title{Semirobust Covariance Matrix Estimators}
 \usage{
-vcovHC.prais(x, type = c("const", "HC1", "HC0"), ...)
+\method{vcovHC}{prais}(x, type = c("const", "HC1", "HC0"), ...)
 }
 \arguments{
 \item{x}{an object of class \code{"prais"}, usually, the result of a call to \code{\link{prais_winsten}}.}

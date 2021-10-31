@@ -15,8 +15,16 @@ print.prais <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
   } else {
     cat("No coefficients\n")
   }
-  cat("\nAR(1) coefficient rho: ",
-      format.default(c("rho" = x$rho[NROW(x$rho), "rho"]), digits = digits),
-      "\n\n", sep = "")
+  if (NCOL(x$rho) == 1) {
+    cat("\nAR(1) coefficient rho: ",
+        format.default(c("rho" = x$rho[NROW(x$rho), "rho"]), digits = digits),
+        "\n\n", sep = "")
+  } else {
+    rho <- data.frame("Group" = dimnames(x$rho)[[2]], "rho" = x$rho[NROW(x$rho), ])
+    row.names(rho) <- NULL
+    cat("\nAR(1) coefficients: \n")
+    print(rho, digits = digits, row.names = FALSE, print.gap = 3L)
+    cat("\n\n")
+  }
   invisible(x)
 }

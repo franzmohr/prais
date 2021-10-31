@@ -41,7 +41,11 @@ summary.prais <- function(object, ...){
 
   coeffs <- object$coefficients
   x_names <- names(coeffs)
-  rho <- object$rho[NROW(object$rho), "rho"]
+  if (NCOL(object$rho) > 1) {
+    rho <- object$rho[NROW(object$rho), ]
+  } else {
+    rho <- object$rho[NROW(object$rho), "rho"]
+  }
   intercept <- "(Intercept)" %in% names(object$coefficients)
 
   mt <- object$terms
@@ -54,6 +58,7 @@ summary.prais <- function(object, ...){
   mod <- cbind(y_orig, x_orig)
 
   n <- nrow(mod)
+  panelwise <- FALSE
   if (is.null(object$index)) {
     panel <- FALSE
     groups <- list(1:n)
@@ -69,6 +74,7 @@ summary.prais <- function(object, ...){
     }
     rm(groups_temp)
     panel <- TRUE
+    if (length(rho) > 1) {panelwise <- TRUE}
   }
 
   pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
@@ -121,21 +127,25 @@ summary.prais <- function(object, ...){
     res <- mod[, 1]
   }
 
-  d_res <- c()
-  d_res_pw <- c()
-  if (panel){
-    for (i in 1:length(groups)){
-      d_res <- c(d_res, diff(res[groups[[i]]]))
-      d_res_pw <- c(d_res_pw, diff(res_pw[groups[[i]]]))
+  if (length(rho) == 1) {
+    d_res <- c()
+    d_res_pw <- c()
+    if (panel){
+      for (i in 1:length(groups)){
+        d_res <- c(d_res, diff(res[groups[[i]]]))
+        d_res_pw <- c(d_res_pw, diff(res_pw[groups[[i]]]))
+      }
+    } else {
+      d_res <- diff(res)
+      d_res_pw <- diff(res_pw)
     }
-  } else {
-    d_res <- diff(res)
-    d_res_pw <- diff(res_pw)
-  }
 
-  dw_orig <- sum(d_res^2) / sum(res^2)
-  dw_pw <- sum(d_res_pw^2, na.rm = TRUE) / sum(res_pw^2, na.rm = TRUE)
-  dw <- c(original = dw_orig, transformed = dw_pw)
+    dw_orig <- sum(d_res^2) / sum(res^2)
+    dw_pw <- sum(d_res_pw^2, na.rm = TRUE) / sum(res_pw^2, na.rm = TRUE)
+    dw <- c(original = dw_orig, transformed = dw_pw)
+  } else {
+    dw <- NULL
+  }
 
   result <- list("call" = cl,
                  "terms" = mt,

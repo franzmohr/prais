@@ -1,6 +1,10 @@
 # prais 1.1.2
 
-* Fix typo in vcovHC.prais
+* Mandatory specification of argument `prais_winsten$index`
+* Added functionality to estimate panel-specific AR(1) coefficients
+* Added functionality for panel-corrected standard errors (PCSE)
+* Added predict function (#6)
+* Fix typo in vcovHC.prais documentation
 
 # prais 1.1.1
 
