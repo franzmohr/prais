@@ -1,11 +1,12 @@
 # prais 1.1.2
 
+* Fix Lazy Data NOTE issue from CRAN results
+* Fix declared imports NOTE issues from CRAN results
 * Estimates of rho are bounded to the range [-1, 1]
 * Mandatory specification of argument `prais_winsten$index`
 * Added functionality to estimate panel-specific AR(1) coefficients
-* Added functionality for panel-corrected standard errors (PCSE)
-* Added predict function (#6)
-* Fix typo in vcovHC.prais documentation
+* Added functionality for panel-corrected standard errors (PCSE) with `vcovPC.prais`
+* Fix typo in `vcovHC.prais` documentation
 
 # prais 1.1.1
 
