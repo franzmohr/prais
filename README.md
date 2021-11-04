@@ -3,7 +3,7 @@
 
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
 [![Build
-Status](https://travis-ci.org/franzmohr/prais.svg?branch=master)](https://travis-ci.org/franzmohr/prais)
+Status](https://app.travis-ci.com/franzmohr/prais.svg?branch=master)](https://app.travis-ci.com/franzmohr/prais)
 
 ## Overview
 
