@@ -86,7 +86,7 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
 
   panel <- FALSE
   if (!is.null(index)){
-    if (lenght(index) > 2) {
+    if (length(index) > 2) {
       stop("Argument 'index' can only have up to 2 elements.")
     }
     if (length(index) == 2) {
