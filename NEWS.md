@@ -1,6 +1,6 @@
 # prais 1.1.3
 
-
+* Additional check for argument `index` of `prais_winsten`.
 
 # prais 1.1.2
 
