@@ -71,10 +71,10 @@ glance.prais <- function(x, ...) {
   summary_x <- summary(x)
   class(x) <- "lm"
   ret <- tibble::tibble(
+    rho = unname(utils::tail(x$rho, 1)[,1]),
     r.squared = summary_x$r.squared,
     adj.r.squared = summary_x$adj.r.squared,
     sigma = summary_x$sigma,
-    df = summary_x$fstatistic["numdf"],
     statistic = summary_x$fstatistic["value"],
     p.value = stats::pf(
       summary_x$fstatistic["value"],
@@ -82,11 +82,8 @@ glance.prais <- function(x, ...) {
       summary_x$fstatistic["dendf"],
       lower.tail = FALSE
     ),
-    logLik = as.numeric(stats::logLik(x)),
-    AIC = stats::AIC(x),
-    BIC = stats::BIC(x),
-    deviance = stats::deviance(x),
-    df.residual = stats::df.residual(x),
+    dw.original = unname(summary_x$dw[1]),
+    dw.transformed = unname(summary_x$dw[2]),
     nobs = stats::nobs(x)
   )
 
