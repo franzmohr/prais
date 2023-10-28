@@ -38,18 +38,16 @@ generics::tidy
 tidy.prais <- function(x, conf.int = FALSE, conf.level = .95, ...) {
 
   co <- summary(x)$coefficients
-  ret <- data.frame(
-    term = row.names(co),
-    estimate = co[,1],
-    std.error = co[,2],
-    statistic = co[,3],
-    p.value = co[,4]
+  ret <- tibble::as_tibble(
+    co,
+    rownames = "term",
   )
+  colnames(ret) <- c("term", "estimate", "std.error", "statistic", "p.value")
 
   if (conf.int) {
     class(x) <- "lm"
     ci <- stats::confint(x, level = conf.level)
-    ci_df <- data.frame(
+    ci_df <- tibble::tibble(
       term = row.names(ci),
       conf.low = ci[,1],
       conf.high = ci[,2]
@@ -72,7 +70,7 @@ tidy.prais <- function(x, conf.int = FALSE, conf.level = .95, ...) {
 glance.prais <- function(x, ...) {
   summary_x <- summary(x)
   class(x) <- "lm"
-  ret <- data.frame(
+  ret <- tibble::tibble(
     r.squared = summary_x$r.squared,
     adj.r.squared = summary_x$adj.r.squared,
     sigma = summary_x$sigma,
