@@ -70,22 +70,30 @@ tidy.prais <- function(x, conf.int = FALSE, conf.level = .95, ...) {
 glance.prais <- function(x, ...) {
   summary_x <- summary(x)
   class(x) <- "lm"
-  ret <- tibble::tibble(
+
+  if(!is.null(summary_x$fstatistic)){
+    stat <- summary_x$fstatistic["value"]
+    p.val <- stats::pf(
+        summary_x$fstatistic["value"],
+        summary_x$fstatistic["numdf"],
+        summary_x$fstatistic["dendf"],
+        lower.tail = FALSE
+    )
+  }else{
+    stat <- NA_real_
+    p.val <- NA_real_
+  }
+
+  tibble::tibble(
     rho = unname(utils::tail(x$rho, 1)[,1]),
     r.squared = summary_x$r.squared,
     adj.r.squared = summary_x$adj.r.squared,
     sigma = summary_x$sigma,
-    statistic = summary_x$fstatistic["value"],
-    p.value = stats::pf(
-      summary_x$fstatistic["value"],
-      summary_x$fstatistic["numdf"],
-      summary_x$fstatistic["dendf"],
-      lower.tail = FALSE
-    ),
+    statistic = stat,
+    p.value = p.val,
     dw.original = unname(summary_x$dw[1]),
     dw.transformed = unname(summary_x$dw[2]),
     nobs = stats::nobs(x)
   )
 
-  ret
 }

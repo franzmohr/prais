@@ -26,6 +26,7 @@ Collate:
     'vcovPC.R'
     'zzz.R'
 Suggests: 
+    broom,
     lmtest,
     modeltests,
     testthat (>= 3.0.0),
