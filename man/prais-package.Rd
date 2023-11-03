@@ -19,5 +19,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Franz X. Mohr \email{prais.r@outlook.com}
 
+Other contributors:
+\itemize{
+  \item Michael Škvrňák \email{michael.skvrnak@protonmail.com} (\href{https://orcid.org/0000-0003-4647-4095}{ORCID}) [contributor]
+}
+
 }
 \keyword{internal}
