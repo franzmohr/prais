@@ -1,4 +1,4 @@
-#' @export
+
 .pw_transform <- function(data, rho, intercept, groups) {
   panelwise <- length(rho) > 1
   j <- 1
