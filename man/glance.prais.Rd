@@ -7,14 +7,14 @@
 \method{glance}{prais}(x, ...)
 }
 \arguments{
-\item{x}{A `prais` object returned from [prais::prais_winsten()].}
+\item{x}{an object of class `prais`, usually, the result of a call to \code{\link{prais_winsten}}.}
 
-\item{...}{Additional arguments. Not used. Needed to match generic
+\item{...}{additional arguments. Not used. Needed to match generic
   signature only. **Cautionary note:** Misspelled arguments will be
-  absorbed in `...`, where they will be ignored. If the misspelled
+  absorbed in \code{...}, where they will be ignored. If the misspelled
   argument has a default value, the default value will be used.
-  For example, if you pass `conf.lvel = 0.9`, all computation will
-  proceed using `conf.level = 0.95`.
+  For example, if you pass \code{conf.lvel = 0.9}, all computation will
+  proceed using \code{conf.level = 0.95}.
 
 # load libraries for models and data
 library(prais)

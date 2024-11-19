@@ -1,5 +1,6 @@
 # prais 1.1.3
 
+* Added functionality to display model results with `tidy` and `glance`.
 * Additional check for argument `index` of `prais_winsten`.
 
 # prais 1.1.2

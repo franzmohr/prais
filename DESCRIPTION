@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: prais
 Type: Package
 Title: Prais-Winsten Estimator for AR(1) Serial Correlation
-Version: 1.1.2.9000
+Version: 1.1.3
 Authors@R: 
     c(
         person("Franz X.", "Mohr", email = "prais.r@outlook.com", role = c("aut","cre")),
@@ -15,7 +15,7 @@ Imports:
     generics,
     stats,
     tibble
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 URL: https://github.com/franzmohr/prais
 BugReports: https://github.com/franzmohr/prais/issues
 Collate:
