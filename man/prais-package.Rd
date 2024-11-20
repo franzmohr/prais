@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Franz X. Mohr \email{prais.r@outlook.com}
+\strong{Maintainer}: Franz X. Mohr \email{franz.x.mohr@outlook.com} (\href{https://orcid.org/0009-0003-8890-7781}{ORCID})
 
 Other contributors:
 \itemize{
