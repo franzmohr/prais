@@ -3,7 +3,6 @@ skip_on_cran()
 skip_if_not_installed("broom")
 skip_if_not_installed("lmtest")
 skip_if_not_installed("modeltests")
-skip_if_not_installed("wooldridge")
 library(lmtest)
 library(modeltests)
 
@@ -95,7 +94,7 @@ test_that("prais::prais tidier arguments", {
 })
 
 test_that("tidy.prais", {
-  data(barium, package = "wooldridge")
+  data(barium, package = "prais")
   r <- prais::prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
                             data = barium, index = "t")
 
@@ -108,7 +107,7 @@ test_that("tidy.prais", {
 })
 
 test_that("glance.prais", {
-  data(barium, package = "wooldridge")
+  data(barium, package = "prais")
   r <- prais::prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
                             data = barium, index = "t")
 
