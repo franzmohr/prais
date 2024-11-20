@@ -6,3 +6,4 @@ README.Rmd
 ^\.gitignore
 ^\.travis\.yml$
 ^\.github$
+^data-raw$
