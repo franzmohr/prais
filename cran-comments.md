@@ -1,6 +1,6 @@
 This is an update:
 
-* Added functionality to display model results with `tidy` and `glance`.
+* Added the `barium` example data set.
 * Additional check for argument `index` of `prais_winsten`.
 
 ## Test environments
