@@ -1,12 +1,12 @@
 
 # prais
 
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
 [![R-CMD-check](https://github.com/FranzMohr/prais/workflows/R-CMD-check/badge.svg)](https://github.com/FranzMohr/prais/actions)
 
 ## Overview
 
-prais implements the Prais-Winsten estimator for models with strictly
+`prais` implements the Prais-Winsten estimator for models with strictly
 exogenous regressors and AR(1) serial correlation of the errors.
 
 ## Installation
@@ -31,8 +31,6 @@ devtools::install_github("franzmohr/prais")
 library(prais)
 
 # Load the data
-# install.packages("wooldridge")
-library(wooldridge)
 data("barium")
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
@@ -59,16 +57,16 @@ summary(pw)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -1.99386 -0.32219  0.03747  0.40226  1.50281 
+    ## -1.99386 -0.32219  0.03748  0.40226  1.50282 
     ## 
     ## AR(1) coefficient rho after 7 iterations: 0.2932
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) -37.07770   22.77830  -1.628   0.1061    
-    ## lchempi       2.94095    0.63284   4.647 8.46e-06 ***
-    ## lgas          1.04638    0.97734   1.071   0.2864    
-    ## lrtwex        1.13279    0.50666   2.236   0.0272 *  
+    ## (Intercept) -37.07582   22.77843  -1.628   0.1061    
+    ## lchempi       2.94096    0.63284   4.647 8.46e-06 ***
+    ## lgas          1.04630    0.97734   1.071   0.2864    
+    ## lrtwex        1.13277    0.50666   2.236   0.0272 *  
     ## befile6      -0.01648    0.31938  -0.052   0.9589    
     ## affile6      -0.03316    0.32181  -0.103   0.9181    
     ## afdec6       -0.57681    0.34199  -1.687   0.0942 .  
@@ -96,13 +94,13 @@ coeftest(pw, vcov. = vcovHC(pw, "HC1"))
     ## t test of coefficients:
     ## 
     ##               Estimate Std. Error t value  Pr(>|t|)    
-    ## (Intercept) -37.077704  20.897126 -1.7743   0.07847 .  
-    ## lchempi       2.940949   0.599551  4.9053 2.867e-06 ***
-    ## lgas          1.046380   0.925137  1.1311   0.26021    
-    ## lrtwex        1.132791   0.495130  2.2879   0.02384 *  
-    ## befile6      -0.016479   0.327779 -0.0503   0.95998    
-    ## affile6      -0.033156   0.277298 -0.1196   0.90502    
-    ## afdec6       -0.576812   0.422553 -1.3651   0.17470    
+    ## (Intercept) -37.075825  20.897425 -1.7742   0.07849 .  
+    ## lchempi       2.940963   0.599549  4.9053 2.866e-06 ***
+    ## lgas          1.046299   0.925151  1.1309   0.26026    
+    ## lrtwex        1.132774   0.495127  2.2878   0.02384 *  
+    ## befile6      -0.016478   0.327779 -0.0503   0.95999    
+    ## affile6      -0.033158   0.277297 -0.1196   0.90501    
+    ## afdec6       -0.576811   0.422552 -1.3651   0.17470    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
