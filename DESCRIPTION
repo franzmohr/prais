@@ -19,6 +19,7 @@ Collate:
     'data.R'
     'prais-package.R'
     'prais_winsten.R'
+    'predict.prais.R'
     'print.prais.R'
     'summary.prais.R'
     'print.summary.prais.R'
