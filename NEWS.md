@@ -1,3 +1,8 @@
+# prais 1.1.4
+
+* Added the function `predict.prais`.
+* No calculation of F-statistic in `summary.prais` when only an intercept is estimated.
+
 # prais 1.1.3
 
 * Added the `barium` example data set.
