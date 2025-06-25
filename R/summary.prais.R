@@ -117,9 +117,11 @@ summary.prais <- function(object, ...){
       mss <- sst - rss
       r.squared <-  mss / sst
       adj.r.squared <- 1 - ((n - p_int) / rdf) * (1 - r.squared)
-      fstatistic <- c(value = (mss / (p - p_int)) / sigma_sq,
-                      numdf = p - p_int,
-                      dendf = rdf)
+      if (p > p_int) {
+        fstatistic <- c(value = (mss / max(p - p_int, 1)) / sigma_sq,
+                        numdf = p - p_int,
+                        dendf = rdf)
+      }
     }
 
     res <- stats::lm.fit(y = mod[, 1], x = as.matrix(mod[, -1]))$residuals
