@@ -1,18 +1,37 @@
 
+# Applies the Prais-Winsten transformation to all panels at once. Working on one
+# panel at a time allocates a copy of the involved rows for every panel, which
+# dominated the run time of samples with many panels.
 .pw_transform <- function(data, rho, intercept, groups) {
-  panelwise <- length(rho) > 1
-  j <- 1
-  for (i in seq_along(groups)) {
-    n_group <- length(groups[[i]])
-    if (panelwise) {j <- i}
-    if (intercept) {
-      data[groups[[i]], 2] <- c((1 - rho[j]^2)^(1 / 2), rep(1 - rho[j], n_group - 1))
-      data[groups[[i]][-1], -2] <- data[groups[[i]][-1], -2] - rho[j] * data[groups[[i]][-n_group], -2]
-      data[groups[[i]][1], -2] <- (1 - rho[j]^2)^(1 / 2) * data[groups[[i]][1], -2]
-      } else {
-        data[groups[[i]][-1],] <- data[groups[[i]][-1],] - rho[j] * data[groups[[i]][-n_group],]
-        data[groups[[i]][1],] <- (1 - rho[j]^2)^(1 / 2) * data[groups[[i]][1],]
-    }
+  n_obs <- lengths(groups)
+  # Positions of the first observation of every panel, of the observations that
+  # have a predecessor within their panel, and of those predecessors
+  first <- vapply(groups, function(x) {x[1L]}, numeric(1))
+  rest <- unlist(lapply(groups, function(x) {x[-1L]}), use.names = FALSE)
+  lagged <- unlist(lapply(groups, function(x) {x[-length(x)]}), use.names = FALSE)
+
+  # One value of rho per panel, repeated for the observations it applies to
+  if (length(rho) > 1) {
+    rho_panel <- rho
+    rho_rest <- rep(rho, n_obs - 1L)
+  } else {
+    rho_panel <- rep(rho, length(groups))
+    rho_rest <- rho
+  }
+  scale_first <- (1 - rho_panel^2)^(1 / 2)
+
+  # The intercept is transformed to a constant and is not differenced
+  columns <- if (intercept) -2L else seq_len(ncol(data))
+
+  # The right hand side is evaluated before it is assigned, so the differences use
+  # the untransformed values throughout
+  data[rest, columns] <- data[rest, columns, drop = FALSE] -
+    rho_rest * data[lagged, columns, drop = FALSE]
+  data[first, columns] <- scale_first * data[first, columns, drop = FALSE]
+
+  if (intercept) {
+    data[unlist(groups, use.names = FALSE), 2] <- rep(1 - rho_panel, n_obs)
+    data[first, 2] <- scale_first
   }
 
   return(data)

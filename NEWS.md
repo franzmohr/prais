@@ -1,3 +1,9 @@
+# prais 1.2.0.9000
+
+* The Prais-Winsten transformation is applied to all panels at once instead of
+one panel at a time, which allocated a copy of the involved rows for every panel.
+The results are unchanged.
+
 # prais 1.2.0
 
 * Added Michael Škvrňák as a contributor.
