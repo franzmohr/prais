@@ -1,14 +1,20 @@
 
 # prais
 
-[![CRAN status](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
-[![CRAN downloads](https://cranlogs.r-pkg.org/badges/prais)](https://cran.r-project.org/package=prais)
-[![Total downloads](https://cranlogs.r-pkg.org/badges/grand-total/prais)](https://cran.r-project.org/package=prais)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/prais)](https://cran.r-project.org/package=prais)
+[![Total
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/prais)](https://cran.r-project.org/package=prais)
 [![R-CMD-check](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml)
-[![License: GPL-2](https://img.shields.io/badge/license-GPL--2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
+[![License:
+GPL-2](https://img.shields.io/badge/license-GPL--2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
 
-[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/franzmohr)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/franzmohr)
+[![GitHub
+Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/franzmohr)
+[![Buy Me a
+Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/franzmohr)
 
 ## Overview
 
@@ -41,18 +47,6 @@ data("barium")
 
 pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
                     data = barium, index = "t")
-```
-
-    ## Iteration 0: rho = 0
-    ## Iteration 1: rho = 0.2708
-    ## Iteration 2: rho = 0.291
-    ## Iteration 3: rho = 0.293
-    ## Iteration 4: rho = 0.2932
-    ## Iteration 5: rho = 0.2932
-    ## Iteration 6: rho = 0.2932
-    ## Iteration 7: rho = 0.2932
-
-``` r
 summary(pw)
 ```
 
@@ -63,7 +57,7 @@ summary(pw)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -1.99386 -0.32219  0.03748  0.40226  1.50282 
+    ## -2.01146 -0.39152  0.06758  0.35063  1.35021 
     ## 
     ## AR(1) coefficient rho after 7 iterations: 0.2932
     ## 
@@ -135,8 +129,8 @@ summary(x)
     ##     rhoweight = "T1")
     ## 
     ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -305.52  -42.61    4.15   33.23  343.52 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -175.949  -17.726   -1.899    8.252  184.278 
     ## 
     ## AR(1) coefficient rho after 1 iterations: 0.906
     ## 
