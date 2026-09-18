@@ -9,34 +9,34 @@ A data frame with 131 rows and 31 variables:
 \describe{
   \item{chnimp}{Chinese imports, bar. chl.}
   \item{bchlimp}{Total imports, bar. chl.}
-  \item{befile6}{Dummy varialbe, which is 1 for all six months before filing.}
-  \item{affile6}{Dummy varialbe, which is 1 for all six months after filing.}
-  \item{afdec6}{Dummy varialbe, which is 1 for all six months after decision}
-  \item{befile12}{Dummy varialbe, which is 1 for all twelve months before filing.}
-  \item{affile12}{Dummy varialbe, which is 1 for all twelve months after filing.}
-  \item{afdec12}{Dummy varialbe, which is 1 for all twelve months after decision.}
+  \item{befile6}{Dummy variable, which is 1 for all six months before filing.}
+  \item{affile6}{Dummy variable, which is 1 for all six months after filing.}
+  \item{afdec6}{Dummy variable, which is 1 for all six months after decision}
+  \item{befile12}{Dummy variable, which is 1 for all twelve months before filing.}
+  \item{affile12}{Dummy variable, which is 1 for all twelve months after filing.}
+  \item{afdec12}{Dummy variable, which is 1 for all twelve months after decision.}
   \item{chempi}{Chemical production index.}
   \item{gas}{Gasoline production.}
   \item{rtwex}{Exchange rate index.}
-  \item{spr}{Dummy varialbe, which is 1 for spring months.}
-  \item{sum}{Dummy varialbe, which is 1 for summer months.}
-  \item{fall}{Dummy varialbe, which is 1 for fall months.}
+  \item{spr}{Dummy variable, which is 1 for spring months.}
+  \item{sum}{Dummy variable, which is 1 for summer months.}
+  \item{fall}{Dummy variable, which is 1 for fall months.}
   \item{lchnimp}{Log of chnimp.}
   \item{lgas}{Log of gas.}
   \item{lrtwex}{Log of rtwex.}
   \item{lchempi}{Log of chempi.}
   \item{t}{Time trend.}
-  \item{feb}{Dummy varialbe for February.}
-  \item{mar}{Dummy varialbe for March.}
-  \item{apr}{Dummy varialbe for April.}
-  \item{may}{Dummy varialbe for May.}
-  \item{jun}{Dummy varialbe for June.}
-  \item{jul}{Dummy varialbe for July.}
-  \item{aug}{Dummy varialbe for August.}
-  \item{sep}{Dummy varialbe for September.}
-  \item{oct}{Dummy varialbe for October.}
-  \item{nov}{Dummy varialbe for November.}
-  \item{dec}{Dummy varialbe for December.}
+  \item{feb}{Dummy variable for February.}
+  \item{mar}{Dummy variable for March.}
+  \item{apr}{Dummy variable for April.}
+  \item{may}{Dummy variable for May.}
+  \item{jun}{Dummy variable for June.}
+  \item{jul}{Dummy variable for July.}
+  \item{aug}{Dummy variable for August.}
+  \item{sep}{Dummy variable for September.}
+  \item{oct}{Dummy variable for October.}
+  \item{nov}{Dummy variable for November.}
+  \item{dec}{Dummy variable for December.}
   \item{percchn}{Percent of imports from China.}
 }
 }
@@ -50,7 +50,7 @@ by Wooldridge (2000) as a textbook dataset. Raw data was obtained from
 \url{http://fmwww.bc.edu/ec-p/data/wooldridge/barium.dta}.
 }
 \references{
-Krupp, C.M., & Pollard, P.S., (1996). Market responses to antidumpting laws:
+Krupp, C.M., & Pollard, P.S., (1996). Market responses to antidumping laws:
 Some evidence from the U.S. chemical industry. \emph{Canadian Journal of Economics 29}(1), 199--227.
 \doi{10.2307/136159}
 

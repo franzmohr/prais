@@ -32,7 +32,9 @@ for each coefficient.}
 \code{summary.prais} returns a list of class \code{"summary.prais"},
 which contains the following components:
 \item{call}{the matched call.}
-\item{residuals}{the residuals, that is the response minus the fitted values.}
+\item{residuals}{the residuals of the Prais-Winsten transformed model, i.e. the
+residuals the reported standard errors are based on. The residuals on the scale
+of the original data are available as \code{residuals} of the estimated object.}
 \item{coefficients}{a named vector of coefficients.}
 \item{rho}{the values of the AR(1) coefficient \eqn{\rho} from all iterations.}
 \item{sigma}{the square root of the estimated variance of the random error.}
@@ -51,7 +53,7 @@ value of the F-statistic with its numerator and denominator degrees of freedom.}
 \emph{coef[j], j=1, ..., p}.}
 \item{dw}{a named 2-vector with the Durbin-Watson statistic of the original
 linear model and the Prais-Winsten estimator.}
-\item{index}{a character specifying the ID and time variables.}
+\item{terms}{the terms object used.}
 }
 \description{
 Summary method for class \code{"prais"}.

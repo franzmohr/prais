@@ -2,6 +2,11 @@
 #'
 #' Predicted values based on Prais-Winsten object.
 #'
+#' @details The predictions are the conditional mean of the model, i.e. the product
+#' of the regressors and the coefficients. The AR(1) structure of the errors is not
+#' used, so the result does not contain the forecast of the serially correlated part
+#' of the error term.
+#'
 #' @param object an object of class \code{"prais"}, usually, a result of a call to
 #' \code{\link{prais_winsten}}.
 #' @param newdata an optional data frame in which to look for variables with which to
@@ -36,7 +41,6 @@
 #' Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
 #'
 #' @export
-#' @rdname prais_winsten
 predict.prais <- function(object, newdata = NULL, ...) {
 
   if (is.null(newdata)) {
