@@ -6,10 +6,16 @@ could not handle transformed variables, factors and interactions.
 * Estimation failed if the model contained linearly dependent variables.
 * Arguments that are not evaluated in the usual way, such as `subset` and `weights`,
 were not passed on to `lm` correctly.
+* `rhoweight` failed if the AR(1) coefficient was not panel specific.
+* Models for which the AR(1) coefficient cannot be obtained, and inadmissible values
+of `max_iter`, failed with errors that did not point to the cause.
 * `vcovHC.prais` and `vcovPC.prais` no longer build an n x n matrix, which required a
 prohibitive amount of memory for larger samples.
 * The history of the iterations is reported with `message` instead of `cat`, so that
 it can be suppressed.
+
+The variables specified in argument `index` are now checked. Periods that do not
+uniquely identify the observations are rejected, which is stricter than before.
 
 The package also gained unit tests.
 
