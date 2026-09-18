@@ -108,3 +108,61 @@ test_that("panel specific estimates of rho are used for the transformation", {
   expect_false(isTRUE(all.equal(unname(pooled$coefficients),
                                 unname(panelwise$coefficients))))
 })
+
+test_that("panel estimates reproduce the block diagonal GLS solution", {
+  # Every panel follows an AR(1) process, so the covariance matrix of the errors
+  # is block diagonal with one AR(1) block per panel
+  data <- ar1_panel(n_group = 8, n_time = 25, rho = .7)
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"),
+                    tol = 1e-12, max_iter = 500)
+  rho <- pw$rho[NROW(pw$rho), "rho"]
+  expect_gt(abs(rho), 0.4)
+
+  frame <- pw$model
+  x <- stats::model.matrix(pw$terms, frame)
+  y <- frame[, "y"]
+  omega_inv <- matrix(0, nrow(x), nrow(x))
+  for (i in unique(frame$id)) {
+    pos <- which(frame$id == i)
+    pos <- pos[order(frame$time[pos])]
+    omega_inv[pos, pos] <- ar1_omega_inv(rho, length(pos))
+  }
+
+  xoi <- crossprod(x, omega_inv)
+  beta <- solve(xoi %*% x, xoi %*% y)
+  expect_equal(unname(pw$coefficients), unname(drop(beta)))
+
+  u <- y - x %*% beta
+  sigma_sq <- drop(crossprod(u, omega_inv) %*% u) / (nrow(x) - ncol(x))
+  expect_equal(unname(summary(pw)$coefficients[, "Std. Error"]),
+               unname(sqrt(diag(solve(xoi %*% x)) * sigma_sq)))
+})
+
+test_that("unbalanced panels reproduce the block diagonal GLS solution", {
+  set.seed(7)
+  lengths_panel <- c(25, 18, 30, 11)
+  data <- do.call(rbind, lapply(seq_along(lengths_panel), function(i) {
+    n <- lengths_panel[i]
+    u <- rnorm(n, 0, 2)
+    for (j in 2:n) u[j] <- u[j] + .6 * u[j - 1]
+    data.frame(id = i, time = seq_len(n), x = rnorm(n, 10, 3), y = NA_real_)
+  }))
+  data$y <- 1 + 2 * data$x + rnorm(nrow(data))
+
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"),
+                    tol = 1e-12, max_iter = 500)
+  rho <- pw$rho[NROW(pw$rho), "rho"]
+
+  frame <- pw$model
+  x <- stats::model.matrix(pw$terms, frame)
+  y <- frame[, "y"]
+  omega_inv <- matrix(0, nrow(x), nrow(x))
+  for (i in unique(frame$id)) {
+    pos <- which(frame$id == i)
+    pos <- pos[order(frame$time[pos])]
+    omega_inv[pos, pos] <- ar1_omega_inv(rho, length(pos))
+  }
+  xoi <- crossprod(x, omega_inv)
+  expect_equal(unname(pw$coefficients),
+               unname(drop(solve(xoi %*% x, xoi %*% y))))
+})
