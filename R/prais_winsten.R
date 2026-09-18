@@ -188,6 +188,17 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     groups <- list(seq_len(nrow(data)))
   }
 
+  # A panel-specific rho is obtained from the residuals of a panel and their lag,
+  # for which at least two observations are required
+  if (panelwise) {
+    n_obs <- vapply(groups, length, numeric(1))
+    if (any(n_obs < 2)) {
+      stop("Panel-specific estimates of rho require at least two observations per panel. ",
+           "Too few observations for: ",
+           paste(group_names[n_obs < 2], collapse = ", "))
+    }
+  }
+
   mt <- lm_temp$terms
   mt_model <- lm_temp$model
   # Keep the factor metadata of the initial fit, because 'lm_temp' is overwritten

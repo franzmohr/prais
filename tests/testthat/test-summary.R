@@ -61,3 +61,33 @@ test_that("the print methods return their argument invisibly", {
   expect_output(expect_identical(print(pw), pw))
   expect_output(expect_identical(print(summary(pw)), summary(pw)))
 })
+
+test_that("models without an intercept are summarised", {
+  data <- ar1_sample()
+  pw <- fit_quietly(y ~ 0 + x, data = data, index = "time")
+  result <- summary(pw)
+
+  expect_identical(rownames(result$coefficients), "x")
+  expect_identical(result$df, c(1L, nrow(data) - 1L, 1L))
+  # Without an intercept the total sum of squares is not centred
+  expect_true(result$r.squared > 0 && result$r.squared <= 1)
+  expect_identical(result$fstatistic[["numdf"]], 1)
+  expect_output(print(result), "Residuals of the transformed model")
+})
+
+test_that("panel specific estimates of rho are printed", {
+  data <- ar1_panel(n_group = 3, n_time = 12)
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"), panelwise = TRUE)
+
+  printed <- capture.output(print(pw))
+  expect_true(any(grepl("AR(1) coefficients", printed, fixed = TRUE)))
+  expect_true(any(grepl("Group", printed, fixed = TRUE)))
+  # Every panel appears in the table
+  for (group in as.character(unique(data$id))) {
+    expect_true(any(grepl(group, printed)), info = group)
+  }
+
+  printed <- capture.output(print(summary(pw)))
+  expect_true(any(grepl("AR(1) coefficients after", printed, fixed = TRUE)))
+  expect_true(any(grepl("Group", printed, fixed = TRUE)))
+})

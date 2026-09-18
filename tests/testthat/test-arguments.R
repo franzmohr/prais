@@ -116,3 +116,22 @@ test_that("the panels of the estimation and of the methods agree", {
                    prais:::.pw_groups(pw, nrow(pw$model)))
   expect_identical(dimnames(pw$rho)[[2]], as.character(unique(pw$model$id)))
 })
+
+test_that("panel specific rho requires two observations per panel", {
+  data <- rbind(ar1_panel(n_group = 2, n_time = 12),
+                data.frame(id = 3, time = 1, x = 0.5, g = factor("a", levels = c("a", "b")),
+                           y = 2.1))
+
+  # The panel with a single observation has no lagged residual
+  expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time"), panelwise = TRUE),
+               "at least two observations per panel")
+  expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time"),
+                           panelwise = TRUE, rhoweight = "T"),
+               "at least two observations per panel")
+  # The offending panel is named
+  expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time"), panelwise = TRUE),
+               "3")
+
+  # A pooled estimate only needs the panels that do have a lag
+  expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time")), NA)
+})

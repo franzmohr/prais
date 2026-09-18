@@ -70,6 +70,11 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
 
     if (!pairwise) {
       timetable <- stats::na.omit(timetable)
+      # Without a common period every covariance would be a sum over no
+      # observations, which would silently produce NaN
+      if (nrow(timetable) == 0) {
+        stop("The panels do not have a period in common, so no covariances can be obtained from the periods that are common to all panels. Use 'pairwise = TRUE' to match the observations of two panels by period.")
+      }
     }
 
     omega <- diag(NA_real_, n_group)

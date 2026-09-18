@@ -46,6 +46,11 @@ model, are rejected with an informative error instead of failing with
 "length of 'dimnames' [2] not equal to array extent".
 * `print.summary.prais` states that the reported residuals belong to the
 transformed model.
+* `vcovPC.prais` reports panels that do not have a period in common instead of
+returning a covariance matrix of NaN. Argument `pairwise = TRUE` can be used to
+match the observations of two panels by period in that case.
+* `prais_winsten` reports panels with less than two observations if `panelwise` is
+`TRUE`, because a panel-specific rho cannot be obtained from a single observation.
 * Documentation fixes: `predict.prais` has its own help page, the description of
 argument `...` of `prais_winsten` is no longer overwritten, the note on values of rho
 above 1 reflects that rho is bounded, `summary.prais` documents the components it
