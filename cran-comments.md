@@ -1,10 +1,10 @@
 This is an update:
 
-* Added the `barium` example data set.
-* Additional check for argument `index` of `prais_winsten`.
+* Added the function `predict.prais`.
+* No calculation of F-statistic in `summary.prais` when only an intercept is estimated.
 
 ## Test environments
-ubuntu 22.04 (on GitHub Actions): R-devel, R-release, R 4.3.3
+ubuntu 24.04 (on GitHub Actions): R-devel, R-release, R 4.4.3
 win-builder: R-release
 macOS: R-release
 
