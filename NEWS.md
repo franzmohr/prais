@@ -1,5 +1,7 @@
 # prais 1.2.0
 
+* Changed the license to GPL (>= 2). Package `pcse`, which `prais` depends on, is
+licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
 * Fixed the handling of missing values in `prais_winsten`. Observations that were
 dropped by `lm` are now also removed from the data that is used to construct the
 panel and lag positions, which previously caused errors such as

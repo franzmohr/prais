@@ -17,6 +17,9 @@ prohibitive amount of memory for larger samples.
 * The history of the iterations is reported with `message` instead of `cat`, so that
 it can be suppressed.
 
+The license is changed from GPL-2 to GPL (>= 2). Package `pcse`, which `prais`
+depends on, is licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
+
 The variables specified in argument `index` are now checked. Periods that do not
 uniquely identify the observations are rejected, which is stricter than before.
 
