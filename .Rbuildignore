@@ -7,3 +7,5 @@ README.Rmd
 ^\.travis\.yml$
 ^\.github$
 ^data-raw$
+^\.zenodo\.json$
+^CITATION\.cff$

@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+type: software
+title: "prais: Prais-Winsten Estimator for AR(1) Serial Correlation"
+abstract: "The Prais-Winsten estimator (Prais & Winsten, 1954) takes into account AR(1) serial correlation of the errors in a linear regression model. The procedure recursively estimates the coefficients and the error autocorrelation of the specified model until sufficient convergence of the AR(1) coefficient is attained."
+version: 1.1.5
+date-released: "2026-09-18"
+license: GPL-2.0-only
+authors:
+  - family-names: Mohr
+    given-names: "Franz X."
+    email: franz.x.mohr@outlook.com
+    orcid: "https://orcid.org/0009-0003-8890-7781"
+repository-code: "https://github.com/franzmohr/prais"
+url: "https://cran.r-project.org/package=prais"
+keywords:
+  - R
+  - r-package
+  - econometrics
+  - time series
+  - panel data
+  - serial correlation
+  - Prais-Winsten
+  - generalized least squares
+references:
+  - type: article
+    title: "Trend Estimators and Serial Correlation"
+    authors:
+      - family-names: Prais
+        given-names: "S. J."
+      - family-names: Winsten
+        given-names: "C. B."
+    year: 1954
+    collection-title: "Cowles Commission Discussion Paper"
+    issue: 383

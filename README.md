@@ -8,8 +8,13 @@ downloads](https://cranlogs.r-pkg.org/badges/prais)](https://cran.r-project.org/
 [![Total
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/prais)](https://cran.r-project.org/package=prais)
 [![R-CMD-check](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/franzmohr/prais/graph/badge.svg)](https://app.codecov.io/gh/franzmohr/prais)
 [![License:
 GPL-2](https://img.shields.io/badge/license-GPL--2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
+<!-- Add after the first Zenodo release, using the concept DOI shown on the Zenodo record:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+-->
 
 [![GitHub
 Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/franzmohr)
@@ -55,7 +60,7 @@ summary(pw)
     ## prais_winsten(formula = lchnimp ~ lchempi + lgas + lrtwex + befile6 + 
     ##     affile6 + afdec6, data = barium, index = "t")
     ## 
-    ## Residuals:
+    ## Residuals of the transformed model:
     ##      Min       1Q   Median       3Q      Max 
     ## -2.01146 -0.39152  0.06758  0.35063  1.35021 
     ## 
@@ -128,7 +133,7 @@ summary(x)
     ##     index = c("company", "year"), twostep = TRUE, panelwise = TRUE, 
     ##     rhoweight = "T1")
     ## 
-    ## Residuals:
+    ## Residuals of the transformed model:
     ##      Min       1Q   Median       3Q      Max 
     ## -175.949  -17.726   -1.899    8.252  184.278 
     ## 
