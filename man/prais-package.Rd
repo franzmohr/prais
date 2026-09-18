@@ -24,5 +24,10 @@ Authors:
   \item Franz X. Mohr \email{franz.x.mohr@outlook.com} (\href{https://orcid.org/0009-0003-8890-7781}{ORCID})
 }
 
+Other contributors:
+\itemize{
+  \item Michael Škvrňák (\href{https://orcid.org/0000-0003-4647-4095}{ORCID}) [contributor]
+}
+
 }
 \keyword{internal}

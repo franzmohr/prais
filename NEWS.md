@@ -1,5 +1,6 @@
 # prais 1.2.0
 
+* Added Michael Škvrňák as a contributor.
 * Changed the license to GPL (>= 2). Package `pcse`, which `prais` depends on, is
 licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
 * Fixed the handling of missing values in `prais_winsten`. Observations that were
