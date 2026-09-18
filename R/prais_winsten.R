@@ -219,19 +219,14 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   # Calculate residuals of the first estimation
   res <- lm_temp$residuals
   if (panel) {
-    pos_res <- pos_res_lag <- c()
-    if (panelwise) {
-      for (i in 1:n_groups){
-        n_temp <- length(groups[[i]])
-        pos_res <- c(pos_res, list(groups[[i]][-1]))
-        pos_res_lag <- c(pos_res_lag, list(groups[[i]][-n_temp]))
-      }
-    } else {
-      for (i in 1:n_groups){
-        n_temp <- length(groups[[i]])
-        pos_res <- c(pos_res, groups[[i]][-1])
-        pos_res_lag <- c(pos_res_lag, groups[[i]][-n_temp])
-      }
+    # The positions are obtained with 'lapply' instead of appending to a vector
+    # in a loop, which copies the whole vector in every iteration and made the
+    # cost grow with the square of the number of panels
+    pos_res <- lapply(groups, function(x) {x[-1]})
+    pos_res_lag <- lapply(groups, function(x) {x[-length(x)]})
+    if (!panelwise) {
+      pos_res <- unlist(pos_res, use.names = FALSE)
+      pos_res_lag <- unlist(pos_res_lag, use.names = FALSE)
     }
   } else {
     pos_res <- 2:n
@@ -248,10 +243,7 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     rho_stats <- c(rho)
   }
   if (rhoweight != "none") {
-    wrho <- rep(NA, n_groups)
-    for (i in 1:n_groups) {
-      wrho[i] <- length(groups[[i]])
-    }
+    wrho <- lengths(groups)
     if (rhoweight == "T1") {
       wrho <- wrho - 1
     }

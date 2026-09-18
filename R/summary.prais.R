@@ -120,13 +120,11 @@ summary.prais <- function(object, ...){
   }
 
   if (length(rho) == 1) {
-    d_res <- c()
-    d_res_pw <- c()
     if (panel){
-      for (i in seq_along(groups)){
-        d_res <- c(d_res, diff(res[groups[[i]]]))
-        d_res_pw <- c(d_res_pw, diff(res_pw[groups[[i]]]))
-      }
+      # The differences are obtained with 'lapply' instead of appending to a
+      # vector in a loop, which copies the whole vector in every iteration
+      d_res <- unlist(lapply(groups, function(x) {diff(res[x])}), use.names = FALSE)
+      d_res_pw <- unlist(lapply(groups, function(x) {diff(res_pw[x])}), use.names = FALSE)
     } else {
       d_res <- diff(res)
       d_res_pw <- diff(res_pw)
