@@ -1,6 +1,10 @@
 # prais 1.2.0
 
 * Added Michael Škvrňák as a contributor.
+* The covariance matrix of the coefficients is obtained from the QR decomposition
+of the transformed model matrix. Inverting its cross product forms the normal
+equations, which squares the condition number and cost accuracy if the regressors
+are close to collinear.
 * The observations are brought back into the order of argument `index` after the
 model frame was built. A `subset` that reorders the observations undid that order
 and made the transformation use the wrong lags.

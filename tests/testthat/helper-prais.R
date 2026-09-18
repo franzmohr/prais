@@ -41,3 +41,15 @@ ar1_panel <- function(n_group = 5, n_time = 20, rho = .5, seed = 1234567) {
 ar1_omega_inv <- function(rho, n) {
   solve(rho^abs(outer(1:n, 1:n, "-")) / (1 - rho^2))
 }
+
+# Applies the Prais-Winsten transformation to a model matrix of a time series,
+# independently of the implementation of the package
+pw_transform_series <- function(x, rho, intercept = TRUE) {
+  n <- nrow(x)
+  result <- rbind(sqrt(1 - rho^2) * x[1, ], x[-1, , drop = FALSE] - rho * x[-n, , drop = FALSE])
+  if (intercept) {
+    result[1, 1] <- sqrt(1 - rho^2)
+    result[-1, 1] <- 1 - rho
+  }
+  result
+}

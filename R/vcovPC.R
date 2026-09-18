@@ -50,7 +50,7 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
     x_pw <- as.matrix(pw_data[, x_names])
     pw_fit <- x_pw %*% coeffs
     res <- c(pw_data[, 1] - pw_fit)
-    cov.unscaled <- solve(crossprod(x_pw))
+    cov.unscaled <- .pw_cov_unscaled(x_pw)
 
     positions <- mt_model[, index]
     group_names <- as.character(unique(positions[, 1]))

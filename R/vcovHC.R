@@ -45,7 +45,7 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     x_pw <- as.matrix(pw_data[, x_names])
     pw_fit <- x_pw %*% coeffs
     res <- c(pw_data[, 1] - pw_fit)
-    cov.unscaled <- solve(crossprod(x_pw))
+    cov.unscaled <- .pw_cov_unscaled(x_pw)
 
     n <- nrow(x_pw)
     switch(type,

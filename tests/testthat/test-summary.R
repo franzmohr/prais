@@ -91,3 +91,68 @@ test_that("panel specific estimates of rho are printed", {
   expect_true(any(grepl("AR(1) coefficients after", printed, fixed = TRUE)))
   expect_true(any(grepl("Group", printed, fixed = TRUE)))
 })
+
+test_that("the reported statistics agree with their definition", {
+  data <- ar1_sample(n = 150, rho = .6)
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time",
+                    tol = 1e-12, max_iter = 500)
+  result <- summary(pw)
+  rho <- pw$rho[NROW(pw$rho), "rho"]
+
+  # The transformed model, built independently of the package
+  x <- stats::model.matrix(pw$terms, pw$model)
+  y <- pw$model[, "y"]
+  n <- nrow(x)
+  x_pw <- pw_transform_series(x, rho)
+  y_pw <- c(sqrt(1 - rho^2) * y[1], y[-1] - rho * y[-n])
+  residuals_pw <- c(y_pw - x_pw %*% pw$coefficients)
+  rdf <- n - length(pw$coefficients)
+
+  expect_equal(unname(result$residuals), unname(residuals_pw))
+  expect_equal(result$sigma, sqrt(sum(residuals_pw^2) / rdf))
+
+  rss <- sum(residuals_pw^2)
+  sst <- sum((y_pw - mean(y_pw))^2)
+  expect_equal(result$r.squared, (sst - rss) / sst)
+  expect_equal(result$adj.r.squared, 1 - ((n - 1) / rdf) * (1 - (sst - rss) / sst))
+  expect_equal(unname(result$fstatistic["value"]),
+               unname(((sst - rss) / 2) / (rss / rdf)))
+  expect_identical(unname(result$fstatistic[c("numdf", "dendf")]), c(2, rdf))
+})
+
+test_that("the Durbin-Watson statistics agree with their definition", {
+  data <- ar1_sample(n = 150, rho = .6)
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time",
+                    tol = 1e-12, max_iter = 500)
+  result <- summary(pw)
+  rho <- pw$rho[NROW(pw$rho), "rho"]
+
+  x <- stats::model.matrix(pw$terms, pw$model)
+  y <- pw$model[, "y"]
+  n <- nrow(x)
+
+  # The statistic of the original model uses the residuals of ordinary least squares
+  residuals_ols <- stats::lm.fit(x = x, y = y)$residuals
+  expect_equal(unname(result$dw["original"]),
+               sum(diff(residuals_ols)^2) / sum(residuals_ols^2))
+
+  x_pw <- pw_transform_series(x, rho)
+  y_pw <- c(sqrt(1 - rho^2) * y[1], y[-1] - rho * y[-n])
+  residuals_pw <- c(y_pw - x_pw %*% pw$coefficients)
+  expect_equal(unname(result$dw["transformed"]),
+               sum(diff(residuals_pw)^2) / sum(residuals_pw^2))
+})
+
+test_that("the unscaled covariance is the inverse cross product of the transformed model matrix", {
+  data <- ar1_sample(n = 120, rho = .5)
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time",
+                    tol = 1e-12, max_iter = 500)
+  result <- summary(pw)
+  rho <- pw$rho[NROW(pw$rho), "rho"]
+
+  x_pw <- pw_transform_series(stats::model.matrix(pw$terms, pw$model), rho)
+  expect_equal(unname(result$cov.unscaled), unname(solve(crossprod(x_pw))))
+  # and the standard errors follow from it
+  expect_equal(unname(result$coefficients[, "Std. Error"]),
+               unname(sqrt(diag(solve(crossprod(x_pw))) * result$sigma^2)))
+})

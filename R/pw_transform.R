@@ -93,3 +93,18 @@
 .pw_no_variation_error <- function() {
   stop("The AR(1) coefficient could not be estimated, because the residuals of the model do not vary.")
 }
+
+# Inverse of the cross product of the model matrix, obtained from its QR
+# decomposition. Inverting the cross product directly forms the normal equations,
+# which squares the condition number of the model matrix and costs accuracy if the
+# regressors are close to collinear.
+.pw_cov_unscaled <- function(x) {
+  qr_x <- qr(x)
+  result <- chol2inv(qr.R(qr_x))
+  # 'qr' pivots columns if it has to, which the result is reordered for
+  pivot <- sort.list(qr_x$pivot)
+  result <- result[pivot, pivot, drop = FALSE]
+  # 'chol2inv' does not carry the names of the variables, which the callers use
+  dimnames(result) <- list(colnames(x), colnames(x))
+  result
+}

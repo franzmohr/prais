@@ -92,7 +92,7 @@ summary.prais <- function(object, ...){
   adj.r.squared <- NULL
   fstatistic <- NULL
   if (p > 0) {
-    cov.unscaled <- solve(crossprod(stats::na.omit(x_pw)))
+    cov.unscaled <- .pw_cov_unscaled(stats::na.omit(x_pw))
     dimnames(cov.unscaled) <- list(x_names, x_names)
     df <- c(p, rdf, NCOL(object$qr$qr))
     est <- object$coefficients[pos_coef]
