@@ -17,7 +17,8 @@ test_that("missing values give the same result as listwise deletion", {
   complete <- data[!is.na(data$x), ]
 
   pw <- fit_quietly(y ~ x, data = data, index = "time")
-  reference <- fit_quietly(y ~ x, data = complete, index = "time")
+  # Deleting the incomplete observation leaves a gap in the time variable
+  reference <- suppressWarnings(fit_quietly(y ~ x, data = complete, index = "time"))
 
   expect_equal(pw$coefficients, reference$coefficients)
   expect_equal(pw$rho, reference$rho)
@@ -46,7 +47,7 @@ test_that("panel models are estimated when values are missing", {
   }
 
   pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"))
-  reference <- fit_quietly(y ~ x, data = complete, index = c("id", "time"))
+  reference <- suppressWarnings(fit_quietly(y ~ x, data = complete, index = c("id", "time")))
   expect_equal(pw$coefficients, reference$coefficients)
 })
 

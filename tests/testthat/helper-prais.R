@@ -1,8 +1,9 @@
-# 'prais_winsten' writes the history of the iterations to the console. This
-# helper suppresses that output to keep the test results readable.
+# 'prais_winsten' reports the history of the iterations. This helper suppresses
+# those messages to keep the test results readable. Arguments that are not
+# evaluated in the usual way, such as 'subset' and 'weights', cannot be passed
+# through the dots of a wrapper and are tested with direct calls.
 fit_quietly <- function(...) {
-  utils::capture.output(result <- prais_winsten(...))
-  result
+  suppressMessages(prais_winsten(...))
 }
 
 # Generates a time series sample with AR(1) errors. Only 'rnorm' is used, so that

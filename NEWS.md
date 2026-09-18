@@ -19,6 +19,26 @@ to NA and omitted from the fitted values, the coefficient table of `summary.prai
 the covariance matrices of `vcovHC.prais` and `vcovPC.prais` and from `predict.prais`.
 * `print.summary.prais` reports the number of coefficients that are not defined
 because of singularities.
+* Arguments such as `subset` and `weights` are now passed on to `lm` correctly. They
+could not be evaluated when they were passed through the dots, which also made the
+check for weighted least squares unreachable.
+* `vcovPC.prais` throws an informative error if it is used on a model that was not
+estimated from panel data.
+* `vcovHC.prais` and `vcovPC.prais` no longer build an n x n matrix, which required a
+prohibitive amount of memory for larger samples. The results are unchanged.
+* The history of the iterations is reported with `message` instead of `cat` and can
+be suppressed with `suppressMessages`.
+* The message about the maximum number of iterations is no longer shown if rho
+converged in the last admissible iteration.
+* `prais_winsten` throws an error if the variables specified in argument `index` are
+not contained in `data` or do not uniquely identify the observations, and warns if
+the time variable is not equally spaced.
+* `summary.prais` returns the residuals of the transformed model, so that they are on
+the same scale as the reported residual standard error.
+* Documentation fixes: `predict.prais` has its own help page, the description of
+argument `...` of `prais_winsten` is no longer overwritten, the note on values of rho
+above 1 reflects that rho is bounded, `summary.prais` documents the components it
+actually returns, and several typos were corrected.
 
 # prais 1.1.4
 
