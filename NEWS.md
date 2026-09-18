@@ -1,6 +1,8 @@
 # prais 1.2.0
 
 * Added Michael Škvrňák as a contributor.
+* Releases are archived on Zenodo. `citation("prais")` reports the DOI of the
+archive.
 * Fixed `vcovPC.prais` for panels that do not all begin in the same period. The
 covariances of the panels were indexed by the order in which the panels first
 appear, while the observations of a period follow the panel, so the covariances

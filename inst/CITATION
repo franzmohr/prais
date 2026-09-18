@@ -22,7 +22,8 @@ bibentry(
                     comment = c(ORCID = "0009-0003-8890-7781")),
   year     = year,
   note     = paste("R package version", version),
-  url      = "https://CRAN.R-project.org/package=prais"
-  ## Add after the first Zenodo release, using the concept DOI of the record:
-  ## , doi = "10.5281/zenodo.XXXXXXX"
+  url      = "https://CRAN.R-project.org/package=prais",
+  ## The concept DOI of the Zenodo archive, which always resolves to the most
+  ## recent release, so that it does not have to be updated for every version
+  doi      = "10.5281/zenodo.22837936"
 )
