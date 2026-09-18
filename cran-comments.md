@@ -4,11 +4,14 @@ This is an update, which mainly fixes bugs:
 * `predict.prais` ignored argument `newdata` if it was not passed by name, and it
 could not handle transformed variables, factors and interactions.
 * Estimation failed if the model contained linearly dependent variables.
+* `vcovPC.prais` returned a covariance matrix of NaN if the panels did not have a
+period in common.
 * Arguments that are not evaluated in the usual way, such as `subset` and `weights`,
 were not passed on to `lm` correctly.
 * `rhoweight` failed if the AR(1) coefficient was not panel specific.
-* Models for which the AR(1) coefficient cannot be obtained, and inadmissible values
-of `max_iter`, failed with errors that did not point to the cause.
+* Models for which the AR(1) coefficient cannot be obtained, such as a panel with a
+single observation if `panelwise = TRUE`, and inadmissible values of `max_iter`,
+failed with errors that did not point to the cause.
 * `vcovHC.prais` and `vcovPC.prais` no longer build an n x n matrix, which required a
 prohibitive amount of memory for larger samples.
 * The history of the iterations is reported with `message` instead of `cat`, so that
