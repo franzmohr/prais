@@ -72,3 +72,47 @@ test_that("the panel positions match the estimates of rho", {
                      dimnames(pw$rho)[[2]][i])
   }
 })
+
+test_that("the panel positions do not depend on the type of the ID variable", {
+  # The positions were obtained with a comparison per panel before, which is
+  # replicated here to make sure that 'split' groups the observations in the
+  # same way and in the same order
+  by_comparison <- function(ids) {
+    names_group <- unique(ids)
+    result <- list()
+    for (i in seq_along(names_group)) {
+      pos <- which(ids == names_group[i])
+      names(pos) <- NULL
+      result <- c(result, list(pos))
+    }
+    result
+  }
+
+  ids <- list(
+    integer = rep(c(3L, 1L, 2L), each = 4),
+    numeric = rep(c(10, 2, 7), each = 4),
+    character = rep(c("b", "a", "c"), each = 4),
+    factor = factor(rep(c("b", "a"), each = 6)),
+    unused_level = factor(rep(c("b", "a"), each = 6), levels = c("a", "b", "zz")),
+    single = rep(1L, 8),
+    unbalanced = c(1, 1, 1, 2, 2, 3, 3, 3, 3)
+  )
+
+  for (name in names(ids)) {
+    expect_identical(prais:::.pw_split_groups(ids[[name]]),
+                     by_comparison(ids[[name]]), info = name)
+  }
+})
+
+test_that("the panels of the estimation and of the methods agree", {
+  # The ID variable is deliberately not sorted
+  panel <- expand.grid(time = 1:14, id = c(30, 10, 20))
+  panel$x <- stats::rnorm(nrow(panel))
+  panel$y <- 1 + 2 * panel$x + stats::rnorm(nrow(panel))
+
+  pw <- fit_quietly(y ~ x, data = panel, index = c("id", "time"), panelwise = TRUE)
+
+  expect_identical(prais:::.pw_split_groups(pw$model$id),
+                   prais:::.pw_groups(pw, nrow(pw$model)))
+  expect_identical(dimnames(pw$rho)[[2]], as.character(unique(pw$model$id)))
+})

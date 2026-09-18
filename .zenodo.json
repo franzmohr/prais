@@ -19,13 +19,5 @@
     "serial correlation",
     "Prais-Winsten",
     "generalized least squares"
-  ],
-  "related_identifiers": [
-    {
-      "identifier": "https://cran.r-project.org/package=prais",
-      "relation": "isIdenticalTo",
-      "resource_type": "software",
-      "scheme": "url"
-    }
   ]
 }

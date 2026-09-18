@@ -24,11 +24,15 @@
   if (is.null(object$index)) {
     return(list(seq_len(n)))
   }
-  ids <- object$model[, object$index[1]]
-  # 'split' is used instead of a comparison per panel, which would require a pass
-  # over all observations for every panel. The levels keep the panels in the order
-  # in which they appear, which is the order of the estimates of rho.
-  unname(split(seq_len(n), factor(ids, levels = unique(ids))))
+  .pw_split_groups(object$model[, object$index[1]])
+}
+
+# Row positions of every panel. 'split' is used instead of a comparison per panel,
+# which would require a pass over all observations for every panel. The levels keep
+# the panels in the order in which they appear, which is the order of the estimates
+# of rho.
+.pw_split_groups <- function(ids) {
+  unname(split(seq_along(ids), factor(ids, levels = unique(ids))))
 }
 
 # Checks the time variable of every panel. Duplicated periods mean that the

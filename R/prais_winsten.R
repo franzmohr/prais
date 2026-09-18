@@ -183,15 +183,9 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   if (panel){
     group_names <- unique(data[, index[1]])
     n_groups <- length(group_names)
-    groups <- c()
-    for (i in 1:n_groups){
-      pos_temp <- which(data[, index[1]] == group_names[i])
-      names(pos_temp) <- NULL
-      groups <- c(groups, list(pos_temp))
-      rm(pos_temp)
-    }
+    groups <- .pw_split_groups(data[, index[1]])
   } else {
-    groups <- list(1:nrow(data))
+    groups <- list(seq_len(nrow(data)))
   }
 
   mt <- lm_temp$terms
