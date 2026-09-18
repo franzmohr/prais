@@ -177,8 +177,12 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
 
   # 'lm' omits incomplete observations, so 'data' is reduced to the rows that
   # entered the model. Otherwise row positions obtained from 'data' would not
-  # refer to the same observations as the rows of 'mod'.
-  data <- data[rownames(lm_temp$model), , drop = FALSE]
+  # refer to the same observations as the rows of 'mod'. Matching the row names
+  # is expensive for larger samples, so it is skipped if the model frame already
+  # consists of the same rows in the same order.
+  if (!identical(attr(lm_temp$model, "row.names"), attr(data, "row.names"))) {
+    data <- data[rownames(lm_temp$model), , drop = FALSE]
+  }
 
   if (panel){
     group_names <- unique(data[, index[1]])

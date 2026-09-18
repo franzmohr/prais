@@ -41,31 +41,47 @@
 # gap are treated as if they were consecutive, which is worth a warning.
 .pw_check_time <- function(data, index, panel) {
   time <- data[, index[length(index)]]
-
-  # 'split' is used instead of a comparison per panel, which would require a pass
-  # over all observations for every panel
-  if (panel) {
-    time_by_panel <- split(time, data[, index[1]])
-  } else {
-    time_by_panel <- list(time)
+  n <- length(time)
+  if (n < 2) {
+    return(invisible(NULL))
   }
 
-  gaps <- FALSE
-  for (time_i in time_by_panel) {
-    time_i <- sort(time_i)
-    if (anyDuplicated(time_i)) {
-      stop("The variables specified in argument 'index' do not uniquely identify the observations.")
-    }
-    if (length(time_i) > 2 && is.numeric(time_i)) {
-      steps <- unique(diff(time_i))
-      if (length(steps) > 1) {
-        gaps <- TRUE
+  # The observations are ordered once, so that the periods of a panel are
+  # adjacent. Checking every panel on its own would require a pass over all
+  # observations for every panel.
+  if (panel) {
+    ids <- data[, index[1]]
+    pos <- order(ids, time)
+  } else {
+    ids <- rep.int(1L, n)
+    pos <- order(time)
+  }
+  ids <- ids[pos]
+  time <- time[pos]
+
+  # TRUE wherever an observation belongs to the same panel as the previous one
+  same <- ids[-1L] == ids[-n]
+
+  # A duplicated period appears as two equal periods in a row
+  if (any(same & time[-1L] == time[-n])) {
+    stop("The variables specified in argument 'index' do not uniquely identify the observations.")
+  }
+
+  if (is.numeric(time)) {
+    starts <- c(1L, which(!same) + 1L)
+    ends <- c(which(!same), n)
+    n_obs <- ends - starts + 1L
+    keep <- n_obs > 1L
+    if (any(keep)) {
+      first <- starts[keep]
+      # Every difference of a panel has to equal the first difference of that
+      # panel. Comparing the span of a panel instead would accept differences
+      # such as 2, 1, 3, which are not equally spaced but span 3 times 2.
+      steps <- rep(time[first + 1L] - time[first], n_obs[keep] - 1L)
+      if (any((time[-1L] - time[-n])[same] != steps)) {
+        warning("The time variable is not equally spaced. Observations that surround a gap are treated as if they were consecutive.")
       }
     }
-  }
-
-  if (gaps) {
-    warning("The time variable is not equally spaced. Observations that surround a gap are treated as if they were consecutive.")
   }
 
   invisible(NULL)

@@ -2,7 +2,8 @@
 
 * Added Michael Škvrňák as a contributor.
 * Estimation and `summary.prais` are considerably faster for data with many
-panels. The positions of the observations were obtained by appending to a vector
+panels, and the check of argument `index` and the alignment of the observations
+no longer dominate the run time of larger samples. The positions of the observations were obtained by appending to a vector
 once per panel, which copies the whole vector in every iteration.
 * Changed the license to GPL (>= 2). Package `pcse`, which `prais` depends on, is
 licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
