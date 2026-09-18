@@ -91,6 +91,21 @@ Obtain PCSE by using all observations that can be matched by period between two 
 coeftest(x, vcov. = vcovPC(x, pairwise = TRUE))
 ```
 
+## Citation
+
+To cite `prais` in publications, use
+
+```{r citation, eval = FALSE}
+citation("prais")
+```
+
+<!-- Add after the first Zenodo release, using the concept DOI shown on the Zenodo record:
+Releases are archived on Zenodo. To cite the package as a whole, rather than one
+particular version, use the concept DOI
+[10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX), which always
+resolves to the most recent release.
+-->
+
 ## References
 
 Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.

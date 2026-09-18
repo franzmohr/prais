@@ -188,6 +188,21 @@ coeftest(x, vcov. = vcovPC(x, pairwise = TRUE))
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
+## Citation
+
+To cite `prais` in publications, use
+
+``` r
+citation("prais")
+```
+
+<!-- Add after the first Zenodo release, using the concept DOI shown on the Zenodo record:
+Releases are archived on Zenodo. To cite the package as a whole, rather than one
+particular version, use the concept DOI
+[10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX), which always
+resolves to the most recent release.
+-->
+
 ## References
 
 Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with
