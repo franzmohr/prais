@@ -70,3 +70,48 @@ test_that("contrasts of the estimation are used by predict", {
   expect_equal(unname(predict(pw, newdata = newdata)),
                unname(stats::predict(reference, newdata = newdata)))
 })
+
+test_that("a subset that reorders the observations keeps the order of the index", {
+  data <- ar1_sample(n = 40)
+  set.seed(3)
+  permutation <- sample(nrow(data))
+
+  # 'lm' returns the observations in the order of 'subset', which would undo the
+  # ordering by 'index' and make the transformation use the wrong lags
+  permuted <- suppressMessages(
+    prais_winsten(y ~ x, data = data, index = "time", subset = permutation))
+  reference <- fit_quietly(y ~ x, data = data, index = "time")
+
+  expect_false(is.unsorted(permuted$model$time))
+  # 'lm' sums in the order of the observations it was given, so the results agree
+  # up to the last bits rather than exactly
+  expect_equal(permuted$coefficients, reference$coefficients)
+  expect_equal(permuted$residuals, reference$residuals)
+  expect_equal(permuted$rho, reference$rho)
+})
+
+test_that("the order of the rows of the data does not affect the estimates", {
+  data <- ar1_sample(n = 40)
+  reference <- fit_quietly(y ~ x, data = data, index = "time")
+
+  set.seed(4)
+  for (rows in list(rev(seq_len(nrow(data))), sample(nrow(data)))) {
+    pw <- fit_quietly(y ~ x, data = data[rows, ], index = "time")
+    expect_equal(pw$coefficients, reference$coefficients)
+    expect_equal(pw$rho, reference$rho)
+  }
+})
+
+test_that("a reordering subset keeps the panels intact", {
+  panel <- ar1_panel(n_group = 4, n_time = 12)
+  set.seed(5)
+  permutation <- sample(nrow(panel))
+
+  permuted <- suppressMessages(
+    prais_winsten(y ~ x, data = panel, index = c("id", "time"), subset = permutation))
+  reference <- fit_quietly(y ~ x, data = panel, index = c("id", "time"))
+
+  expect_identical(permuted$model$id, reference$model$id)
+  expect_identical(permuted$model$time, reference$model$time)
+  expect_equal(permuted$coefficients, reference$coefficients)
+})

@@ -184,6 +184,24 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     data <- data[rownames(lm_temp$model), , drop = FALSE]
   }
 
+  # Argument 'subset' of 'lm' can reorder the observations, which would undo the
+  # ordering by 'index' and make the transformation use the wrong lags. The order
+  # is therefore restored after the model frame was built. In the usual case the
+  # observations are already in the right order and nothing is copied.
+  reorder <- NULL
+  if (length(index) > 0) {
+    if (panel) {
+      reorder <- order(data[, index[2]], data[, index[1]])
+    } else {
+      reorder <- order(data[, index])
+    }
+    if (is.unsorted(reorder)) {
+      data <- data[reorder, , drop = FALSE]
+    } else {
+      reorder <- NULL
+    }
+  }
+
   if (panel){
     group_names <- unique(data[, index[1]])
     n_groups <- length(group_names)
@@ -217,11 +235,25 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   mod <- cbind(y_orig, x_orig)
   rm(list = c("y_orig", "x_orig"))
 
+  # The model frame follows the order in which 'lm' returned the observations, so
+  # it is brought into the same order as 'data'
+  if (!is.null(reorder)) {
+    terms_model <- attr(mt_model, "terms")
+    mt_model <- mt_model[reorder, , drop = FALSE]
+    attr(mt_model, "terms") <- terms_model
+    mod <- mod[reorder, , drop = FALSE]
+  }
+
   intercept <- "(Intercept)" %in% x_name
   n <- nrow(mod)
 
-  # Calculate residuals of the first estimation
+  # Calculate residuals of the first estimation. They follow the order in which
+  # 'lm' returned the observations, which is not the order of 'mod' if the
+  # observations had to be brought back into the order of the index.
   res <- lm_temp$residuals
+  if (!is.null(reorder)) {
+    res <- res[reorder]
+  }
   if (panel) {
     # The positions are obtained with 'lapply' instead of appending to a vector
     # in a loop, which copies the whole vector in every iteration and made the

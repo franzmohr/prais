@@ -1,6 +1,9 @@
 # prais 1.2.0
 
 * Added Michael Škvrňák as a contributor.
+* The observations are brought back into the order of argument `index` after the
+model frame was built. A `subset` that reorders the observations undid that order
+and made the transformation use the wrong lags.
 * Estimation and `summary.prais` are considerably faster for data with many
 panels, and the check of argument `index` and the alignment of the observations
 no longer dominate the run time of larger samples. The positions of the observations were obtained by appending to a vector
