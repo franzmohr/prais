@@ -5,7 +5,7 @@ This is an update, which mainly fixes bugs:
 could not handle transformed variables, factors and interactions.
 * Estimation failed if the model contained linearly dependent variables.
 * `vcovPC.prais` assigned the covariances of the panels to the wrong panels if the
-panels did not all begin in the same period, which gave wrong standard errors.
+panels did not all begin in the same period.
 * `vcovPC.prais` returned a covariance matrix of NaN if the panels did not have a
 period in common.
 * Arguments that are not evaluated in the usual way, such as `subset` and `weights`,
