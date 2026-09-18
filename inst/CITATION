@@ -1,0 +1,28 @@
+## The year of the release. It is part of the DESCRIPTION of an installed package,
+## but not of the sources, in which case the current year is used.
+year <- meta$`Date/Publication`
+if (is.null(year)) {
+  year <- meta$Date
+}
+if (is.null(year) || !nzchar(year)) {
+  year <- format(Sys.Date(), "%Y")
+} else {
+  year <- substr(year, 1, 4)
+}
+
+version <- meta$Version
+if (is.null(version)) {
+  version <- packageVersion("prais")
+}
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "{prais}: Prais-Winsten Estimator for AR(1) Serial Correlation",
+  author   = person("Franz X.", "Mohr",
+                    comment = c(ORCID = "0009-0003-8890-7781")),
+  year     = year,
+  note     = paste("R package version", version),
+  url      = "https://CRAN.R-project.org/package=prais"
+  ## Add after the first Zenodo release, using the concept DOI of the record:
+  ## , doi = "10.5281/zenodo.XXXXXXX"
+)
