@@ -28,11 +28,15 @@
 #' transformation uses the previous observation of a panel, the observations that
 #' surround a dropped one are treated as if they were consecutive.
 #'
-#' If \eqn{\rho} takes a value above 1 during the estimation process,
-#' the Prais-Winsten transformation cannot be applied to the first
-#' observations, because \eqn{(1 - \rho^2)^{(1 / 2)}} is not real. These observations
-#' are dropped during the respective iteration and the estimator effectively becomes
-#' the Cochrane-Orcutt estimator.
+#' Estimates of \eqn{\rho} are bounded to the interval \eqn{[-1, 1]}, because the
+#' transformation of the first observation of a panel requires
+#' \eqn{(1 - \rho^2)^{(1 / 2)}} to be real. If \eqn{\rho} attains one of those bounds,
+#' the first observation of each panel becomes zero and does not contribute to the
+#' estimates, so that the estimator effectively becomes the Cochrane-Orcutt estimator.
+#'
+#' The time variable is only used to order the observations. If it is not equally
+#' spaced, a warning is issued, because the observations that surround a gap are
+#' treated as if they were consecutive.
 #'
 #' If \code{panelwise = TRUE}, \code{twostep = FALSE} and \code{rhoweight = "none"},
 #' each individual estimate of \eqn{rho} is re-estimated until convergence is achieved for all coefficients.
@@ -63,7 +67,7 @@
 #'
 #' Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation. Cowles Commission Discussion Paper, 383 (Chicago).
 #'
-#' Wooldridge, J. M. (2013): Introductory Econometrics. A Modern Approach. 5th ed. Mason, OH: South-Western Cengage Learning Cengage.
+#' Wooldridge, J. M. (2013): Introductory Econometrics. A Modern Approach. 5th ed. Mason, OH: South-Western Cengage Learning.
 #'
 #' @examples
 #' # Generate an artificial sample
@@ -104,9 +108,14 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   }
 
   if (length(index) > 0) {
+    if (!all(index %in% names(data))) {
+      stop("Not all variables specified in argument 'index' are contained in 'data': ",
+           paste(index[!index %in% names(data)], collapse = ", "))
+    }
     if (anyNA(data[, index])) {
       stop("The variables specified in argument 'index' must not contain NA values.")
     }
+    .pw_check_time(data, index, panel)
   }
 
   if (length(index) == 1) {
@@ -117,7 +126,17 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     data <- data[order(data[, index[2]]), ]
   }
 
-  lm_temp <- stats::lm(formula = formula, data = data, ...)
+  # 'lm' is called by rebuilding the call, because arguments such as 'subset' and
+  # 'weights' are not evaluated in the usual way and cannot be passed on through
+  # '...'. 'formula' and 'data' refer to the objects of this function, so that the
+  # ordered data are used.
+  lm_call <- match.call(expand.dots = TRUE)
+  lm_call <- lm_call[!names(lm_call) %in% c("index", "max_iter", "tol", "twostep",
+                                            "panelwise", "rhoweight")]
+  lm_call[[1L]] <- quote(stats::lm)
+  lm_call$formula <- quote(formula)
+  lm_call$data <- quote(data)
+  lm_temp <- eval(lm_call)
 
   if (!is.null(lm_temp$weights)) {
     stop("prais_winsten does not support weighted least squares yet.")
@@ -204,7 +223,7 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   i <- 1
   update <- TRUE
   if (!panelwise) {
-    cat("Iteration 0: rho = ", round(rho, 4), "\n", sep = "")
+    message("Iteration 0: rho = ", round(rho, 4))
   }
   while(update) {
 
@@ -252,12 +271,17 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     res <- mod[, y_name] - fit
 
     if (!panelwise) {
-      cat("Iteration ", i, ": rho = ", round(rho, 4), "\n", sep = "")
+      message("Iteration ", i, ": rho = ", round(rho, 4))
     }
     i <- i + 1
-    if (i - 1 == max_iter & !twostep) {message("Estimation was stopped, because the maximum number of iterations was reached.")}
 
-    update <- i <= max_iter & any(abs(rho - rho_last) > tol)
+    # The message must only appear if the iterations were stopped before rho
+    # converged
+    converged <- all(abs(rho - rho_last) <= tol)
+    update <- i <= max_iter & !converged
+    if (i > max_iter & !converged & !twostep) {
+      message("Estimation was stopped, because the maximum number of iterations was reached.")
+    }
   }
 
   if (panelwise & rhoweight == "none") {
