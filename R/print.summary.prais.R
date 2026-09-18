@@ -33,7 +33,12 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
         " iterations: ", formatC(rho, digits = digits), "\n", sep = "")
   }
   if (length(x$coefficients)) {
-    cat("\nCoefficients:\n")
+    nsingular <- x$df[3L] - x$df[1L]
+    if (nsingular > 0) {
+      cat("\nCoefficients: (", nsingular, " not defined because of singularities)\n", sep = "")
+    } else {
+      cat("\nCoefficients:\n")
+    }
     coefs <- x$coefficients
     stats::printCoefmat(coefs, digits = digits, signif.stars = signif.stars, na.print = "NA", ...)
   } else {

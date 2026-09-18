@@ -11,7 +11,7 @@
 #' it must also contain the ID and time variables.
 #' @param index a character vector specifying the ID and time variables. If only one variable
 #' is provided, it is assumed to be the time variable and the data will be reordered
-#' accordingly.
+#' accordingly. The specified variables must not contain \code{NA} values.
 #' @param max_iter integer specifying the maximum number of allowed iterations. Default is 50.
 #' @param tol numeric specifying the maximum absolute difference between the estimator of \eqn{rho}
 #' in the current and the previous iteration that has to be attained to reach convergence.
@@ -23,7 +23,12 @@
 #' See 'Details'.
 #' @param ... arguments passed to \code{\link[stats]{lm}}.
 #'
-#' @details If \eqn{\rho} takes a value above 1 during the estimation process,
+#' @details Observations with missing values in the variables of \code{formula} are
+#' dropped before estimation, as in \code{\link[stats]{lm}}. Since the Prais-Winsten
+#' transformation uses the previous observation of a panel, the observations that
+#' surround a dropped one are treated as if they were consecutive.
+#'
+#' If \eqn{\rho} takes a value above 1 during the estimation process,
 #' the Prais-Winsten transformation cannot be applied to the first
 #' observations, because \eqn{(1 - \rho^2)^{(1 / 2)}} is not real. These observations
 #' are dropped during the respective iteration and the estimator effectively becomes
@@ -49,6 +54,8 @@
 #' \item{call}{the matched call.}
 #' \item{terms}{the terms object used.}
 #' \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
+#' \item{xlevels}{a record of the levels of the factors used in fitting.}
+#' \item{contrasts}{the contrasts used, if the model contains factors.}
 #' \item{index}{a character specifying the ID and time variables.}
 #'
 #' @references
@@ -96,12 +103,32 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     }
   }
 
+  if (length(index) > 0) {
+    if (anyNA(data[, index])) {
+      stop("The variables specified in argument 'index' must not contain NA values.")
+    }
+  }
+
   if (length(index) == 1) {
     data <- data[order(data[, index]), ]
   }
   if (panel){
     data <- data[order(data[, index[1]]), ]
     data <- data[order(data[, index[2]]), ]
+  }
+
+  lm_temp <- stats::lm(formula = formula, data = data, ...)
+
+  if (!is.null(lm_temp$weights)) {
+    stop("prais_winsten does not support weighted least squares yet.")
+  }
+
+  # 'lm' omits incomplete observations, so 'data' is reduced to the rows that
+  # entered the model. Otherwise row positions obtained from 'data' would not
+  # refer to the same observations as the rows of 'mod'.
+  data <- data[rownames(lm_temp$model), , drop = FALSE]
+
+  if (panel){
     group_names <- unique(data[, index[1]])
     n_groups <- length(group_names)
     groups <- c()
@@ -115,14 +142,12 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     groups <- list(1:nrow(data))
   }
 
-  lm_temp <- stats::lm(formula = formula, data = data, ...)
-
-  if (!is.null(lm_temp$weights)) {
-    stop("prais_winsten does not support weighted least squares yet.")
-  }
-
   mt <- lm_temp$terms
   mt_model <- lm_temp$model
+  # Keep the factor metadata of the initial fit, because 'lm_temp' is overwritten
+  # during the iterations. It is needed to build the model matrix in 'predict'.
+  mt_xlevels <- lm_temp$xlevels
+  mt_contrasts <- lm_temp$contrasts
   y_orig <- as.matrix(mt_model[, attributes(mt)$response])
   y_name <- names(mt_model)[attributes(mt)$response]
   dimnames(y_orig) <- list(NULL, y_name)
@@ -220,7 +245,10 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     x_temp <- matrix(sample_temp[, -1], nrow = nrow(sample_temp), dimnames = list(NULL, x_name))
     lm_temp <- stats::lm.fit(y = y_temp, x = x_temp)
 
-    fit <- as.matrix(mod[, -1]) %*% lm_temp$coefficients
+    # Coefficients of linearly dependent variables are NA. They are omitted, so
+    # that the fitted values and the residuals do not become NA as well.
+    pos_coef <- !is.na(lm_temp$coefficients)
+    fit <- as.matrix(mod[, -1])[, pos_coef, drop = FALSE] %*% lm_temp$coefficients[pos_coef]
     res <- mod[, y_name] - fit
 
     if (!panelwise) {
@@ -250,6 +278,10 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
                  "terms" = mt,
                  "qr" = lm_temp$qr,
                  "model" = mt_model)
+
+  # As in 'lm', 'contrasts' is only added if the model contains factors
+  result$xlevels <- mt_xlevels
+  result$contrasts <- mt_contrasts
 
   if (panel) {
     result$index <- index

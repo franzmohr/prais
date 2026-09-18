@@ -19,7 +19,7 @@ prais_winsten(
   ...
 )
 
-\method{predict}{prais}(object, ..., newdata = NULL)
+\method{predict}{prais}(object, newdata = NULL, ...)
 
 \method{print}{prais}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
@@ -32,7 +32,7 @@ it must also contain the ID and time variables.}
 
 \item{index}{a character vector specifying the ID and time variables. If only one variable
 is provided, it is assumed to be the time variable and the data will be reordered
-accordingly.}
+accordingly. The specified variables must not contain \code{NA} values.}
 
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
@@ -53,7 +53,9 @@ See 'Details'.}
 \item{object}{an object of class \code{"prais"}, usually, a result of a call to
 \code{\link{prais_winsten}}.}
 
-\item{newdata}{an optional data frame in which to look for variables with with to predict. If omitted, fitted values are used.}
+\item{newdata}{an optional data frame in which to look for variables with which to
+predict. It must contain the variables that appear in \code{formula}, which do not
+have to be transformed beforehand. If omitted, the fitted values are used.}
 
 \item{x}{an object of class "prais", usually, a result of a call to \code{\link{prais_winsten}}.}
 
@@ -70,9 +72,11 @@ A list of class \code{"prais"} containing the following components:
 \item{call}{the matched call.}
 \item{terms}{the terms object used.}
 \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
+\item{xlevels}{a record of the levels of the factors used in fitting.}
+\item{contrasts}{the contrasts used, if the model contains factors.}
 \item{index}{a character specifying the ID and time variables.}
 
-A vector of or predictions.
+A vector of predictions.
 }
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
@@ -83,6 +87,11 @@ the AR(1) coefficient is reached. All estimates are obtained by OLS.
 Predicted values based on Prais-Winsten object.
 }
 \details{
+Observations with missing values in the variables of \code{formula} are
+dropped before estimation, as in \code{\link[stats]{lm}}. Since the Prais-Winsten
+transformation uses the previous observation of a panel, the observations that
+surround a dropped one are treated as if they were consecutive.
+
 If \eqn{\rho} takes a value above 1 during the estimation process,
 the Prais-Winsten transformation cannot be applied to the first
 observations, because \eqn{(1 - \rho^2)^{(1 / 2)}} is not real. These observations

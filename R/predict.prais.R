@@ -4,10 +4,12 @@
 #'
 #' @param object an object of class \code{"prais"}, usually, a result of a call to
 #' \code{\link{prais_winsten}}.
-#' @param newdata an optional data frame in which to look for variables with with to predict. If omitted, fitted values are used.
+#' @param newdata an optional data frame in which to look for variables with which to
+#' predict. It must contain the variables that appear in \code{formula}, which do not
+#' have to be transformed beforehand. If omitted, the fitted values are used.
 #' @param ... further arguments passed to or from other methods.
 #'
-#' @return A vector of or predictions.
+#' @return A vector of predictions.
 #'
 #' @examples
 #' # Generate an artificial sample
@@ -35,30 +37,45 @@
 #'
 #' @export
 #' @rdname prais_winsten
-predict.prais <- function(object, ..., newdata = NULL) {
+predict.prais <- function(object, newdata = NULL, ...) {
 
   if (is.null(newdata)) {
-    fcst <- object$fitted.values
-  } else {
-
-    if (!"data.frame" %in% class(newdata)) {
-      stop("Object 'newdata' is not of class data.frame.")
-    }
-
-    n <- NROW(newdata)
-    vars <- names(object$coefficients)
-    data_names <- names(newdata)
-    # Add intercept
-    if ("(Intercept)" %in% vars & !"(Intercept)" %in% names(newdata)) {
-      newdata <- cbind(newdata, rep(1, n))
-      names(newdata) <- c(data_names, "(Intercept)")
-    }
-    if (!all(vars %in% names(newdata))) {
-      stop("Object 'newdata' does not contain all variables of the model.")
-    }
-    newdata <- newdata[, names(object$coefficients)]
-    fcst <- c(as.matrix(newdata) %*% matrix(object$coefficients))
+    return(object$fitted.values)
   }
+
+  if (!is.data.frame(newdata)) {
+    stop("Object 'newdata' is not of class data.frame.")
+  }
+
+  mt <- stats::delete.response(object$terms)
+
+  if (!all(all.vars(mt) %in% names(newdata))) {
+    stop("Object 'newdata' does not contain all variables of the model.")
+  }
+
+  # Objects that were produced by earlier versions of the package do not contain
+  # element 'xlevels'. For those the factor levels are obtained from the model
+  # frame of the original estimation.
+  xlev <- object$xlevels
+  if (is.null(xlev)) {
+    xlev <- stats::.getXlevels(mt, object$model)
+  }
+
+  # Build the model matrix in the same way as during the estimation, so that
+  # transformed variables, factors and interactions are treated consistently.
+  mf <- stats::model.frame(mt, newdata, na.action = stats::na.pass, xlev = xlev)
+  x <- stats::model.matrix(mt, mf, contrasts.arg = object$contrasts)
+
+  # Coefficients of linearly dependent variables are NA and are omitted
+  coeffs <- object$coefficients
+  coeffs <- coeffs[!is.na(coeffs)]
+  x_names <- names(coeffs)
+  if (!all(x_names %in% dimnames(x)[[2]])) {
+    stop("The model matrix of 'newdata' does not contain all variables of the model.")
+  }
+
+  fcst <- c(x[, x_names, drop = FALSE] %*% coeffs)
+  names(fcst) <- row.names(newdata)
 
   return(fcst)
 }

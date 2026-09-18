@@ -20,6 +20,9 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
   type <- match.arg(type)
 
   coeffs <- x$coefficients
+  # Coefficients of linearly dependent variables are NA and are omitted, as in
+  # the covariance matrix of an object of class 'lm'
+  coeffs <- coeffs[!is.na(coeffs)]
   if (length(coeffs) > 0) {
     x_names <- names(coeffs)
     rho <- x$rho[NROW(x$rho), ]

@@ -1,3 +1,25 @@
+# prais 1.1.5
+
+* Fixed the handling of missing values in `prais_winsten`. Observations that were
+dropped by `lm` are now also removed from the data that is used to construct the
+panel and lag positions, which previously caused errors such as
+"subscript out of bounds" or "NA/NaN/Inf in 'y'".
+* `prais_winsten` now throws an informative error if the variables specified in
+argument `index` contain `NA` values.
+* Fixed argument `newdata` of `predict.prais`, which was positioned after `...` and
+was therefore ignored when it was not passed by name. `predict(object, newdata)`
+silently returned the fitted values instead of the predictions.
+* `predict.prais` now builds the model matrix of `newdata` from the model terms.
+Transformed variables, factors and interactions are handled correctly, and the
+variables in `newdata` no longer have to be named after the model coefficients.
+* `prais_winsten` returns the new elements `xlevels` and `contrasts`.
+* Fixed the estimation of models with linearly dependent variables, which failed with
+the error "NA/NaN/Inf in 'x'". As in `lm`, the coefficients of such variables are set
+to NA and omitted from the fitted values, the coefficient table of `summary.prais`,
+the covariance matrices of `vcovHC.prais` and `vcovPC.prais` and from `predict.prais`.
+* `print.summary.prais` reports the number of coefficients that are not defined
+because of singularities.
+
 # prais 1.1.4
 
 * Added the function `predict.prais`.

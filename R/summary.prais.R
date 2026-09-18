@@ -40,6 +40,10 @@ summary.prais <- function(object, ...){
   cl <- object$call
 
   coeffs <- object$coefficients
+  # Coefficients of linearly dependent variables are NA. They are omitted from
+  # the coefficient table and the covariance matrix, as in 'summary.lm'.
+  pos_coef <- !is.na(coeffs)
+  coeffs <- coeffs[pos_coef]
   x_names <- names(coeffs)
   if (NCOL(object$rho) > 1) {
     rho <- object$rho[NROW(object$rho), ]
@@ -105,7 +109,7 @@ summary.prais <- function(object, ...){
     cov.unscaled <- solve(crossprod(stats::na.omit(x_pw)))
     dimnames(cov.unscaled) <- list(x_names, x_names)
     df <- c(p, rdf, NCOL(object$qr$qr))
-    est <- object$coefficients
+    est <- object$coefficients[pos_coef]
     se <- sqrt(diag(cov.unscaled) * sigma_sq)
     tval <- est / se
     coeffs <- cbind(`Estimate` = est,
