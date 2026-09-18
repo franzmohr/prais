@@ -136,6 +136,20 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   lm_call[[1L]] <- quote(stats::lm)
   lm_call$formula <- quote(formula)
   lm_call$data <- quote(data)
+  # The model frame is needed to obtain the observations that entered the model
+  lm_call$model <- TRUE
+
+  # Arguments that another function forwarded through its own dots appear as
+  # '..1', '..2' and so on, which cannot be evaluated here. They are replaced by
+  # their values, which are available in the frame of the calling function.
+  dot_args <- match.call(expand.dots = FALSE)[["..."]]
+  for (arg in names(dot_args)) {
+    if (nzchar(arg) && is.symbol(dot_args[[arg]]) &&
+        grepl("^[.][.][0-9]+$", as.character(dot_args[[arg]]))) {
+      lm_call[[arg]] <- eval(dot_args[[arg]], parent.frame())
+    }
+  }
+
   lm_temp <- eval(lm_call)
 
   if (!is.null(lm_temp$weights)) {

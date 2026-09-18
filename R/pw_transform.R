@@ -41,11 +41,18 @@
 # gap are treated as if they were consecutive, which is worth a warning.
 .pw_check_time <- function(data, index, panel) {
   time <- data[, index[length(index)]]
-  ids <- if (panel) data[, index[1]] else rep(1L, length(time))
+
+  # 'split' is used instead of a comparison per panel, which would require a pass
+  # over all observations for every panel
+  if (panel) {
+    time_by_panel <- split(time, data[, index[1]])
+  } else {
+    time_by_panel <- list(time)
+  }
 
   gaps <- FALSE
-  for (i in unique(ids)) {
-    time_i <- sort(time[ids == i])
+  for (time_i in time_by_panel) {
+    time_i <- sort(time_i)
     if (anyDuplicated(time_i)) {
       stop("The variables specified in argument 'index' do not uniquely identify the observations.")
     }
