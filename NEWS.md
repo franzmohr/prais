@@ -35,6 +35,17 @@ not contained in `data` or do not uniquely identify the observations, and warns 
 the time variable is not equally spaced.
 * `summary.prais` returns the residuals of the transformed model, so that they are on
 the same scale as the reported residual standard error.
+* `rhoweight` no longer fails with "object 'n_groups' not found" if rho is not
+panel specific. The weights only combine panel-specific estimates and are ignored
+otherwise.
+* Arguments `max_iter` and `tol` are validated. `max_iter = 0` was silently treated
+as one iteration and made the estimation of panel-specific rho fail with
+"subscript out of bounds".
+* Models whose residuals do not vary, such as a saturated or a perfectly fitting
+model, are rejected with an informative error instead of failing with
+"length of 'dimnames' [2] not equal to array extent".
+* `print.summary.prais` states that the reported residuals belong to the
+transformed model.
 * Documentation fixes: `predict.prais` has its own help page, the description of
 argument `...` of `prais_winsten` is no longer overwritten, the note on values of rho
 above 1 reflects that rho is bounded, `summary.prais` documents the components it

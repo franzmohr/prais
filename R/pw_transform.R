@@ -25,14 +25,10 @@
     return(list(seq_len(n)))
   }
   ids <- object$model[, object$index[1]]
-  group_names <- unique(ids)
-  groups <- vector("list", length(group_names))
-  for (i in seq_along(group_names)) {
-    pos <- which(ids == group_names[i])
-    names(pos) <- NULL
-    groups[[i]] <- pos
-  }
-  groups
+  # 'split' is used instead of a comparison per panel, which would require a pass
+  # over all observations for every panel. The levels keep the panels in the order
+  # in which they appear, which is the order of the estimates of rho.
+  unname(split(seq_len(n), factor(ids, levels = unique(ids))))
 }
 
 # Checks the time variable of every panel. Duplicated periods mean that the
@@ -69,4 +65,11 @@
   }
 
   invisible(NULL)
+}
+
+# Raised if the residuals of the model do not vary, so that rho cannot be obtained
+# from them. Whether that happens depends on the floating point arithmetic of the
+# platform, which is why it is kept in a function of its own.
+.pw_no_variation_error <- function() {
+  stop("The AR(1) coefficient could not be estimated, because the residuals of the model do not vary.")
 }

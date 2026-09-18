@@ -12,6 +12,9 @@ test_that("the summary output has the documented structure", {
   expect_identical(rownames(result$coefficients), c("(Intercept)", "x", "z"))
   expect_identical(result$df, c(3L, nrow(data) - 3L, 3L))
   expect_identical(names(result$dw), c("original", "transformed"))
+  # The reported residuals belong to the transformed model
+  expect_true(any(grepl("Residuals of the transformed model",
+                        capture.output(print(result)))))
 })
 
 test_that("the t values and p values are consistent with the estimates", {

@@ -10,7 +10,7 @@ print.summary.prais <- function(x, digits = max(3L, getOption("digits") - 3L),
   df <- x$df
   rdf <- df[2L]
   if (rdf > 5L) {
-    cat("Residuals:\n", sep = "")
+    cat("Residuals of the transformed model:\n", sep = "")
     nam <- c("Min", "1Q", "Median", "3Q", "Max")
     if (length(dim(resid)) == 2L) {
       rq <- structure(apply(t(resid), 1L, stats::quantile), dimnames = list(nam, dimnames(resid)[[2L]]))

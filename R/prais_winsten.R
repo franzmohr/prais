@@ -60,7 +60,8 @@
 #' \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
 #' \item{xlevels}{a record of the levels of the factors used in fitting.}
 #' \item{contrasts}{the contrasts used, if the model contains factors.}
-#' \item{index}{a character specifying the ID and time variables.}
+#' \item{index}{a character specifying the ID and time variables. Only added if
+#' panel data were used.}
 #'
 #' @references
 #' Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.
@@ -95,6 +96,13 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   rhoweight <- match.arg(rhoweight)
   data <- as.data.frame(data)
 
+  if (length(max_iter) != 1 || !is.finite(max_iter) || max_iter < 1) {
+    stop("Argument 'max_iter' must be a single integer greater than zero.")
+  }
+  if (length(tol) != 1 || !is.finite(tol) || tol < 0) {
+    stop("Argument 'tol' must be a single non-negative number.")
+  }
+
   panel <- FALSE
   if (!is.null(index)){
     if (length(index) > 2) {
@@ -105,6 +113,11 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     } else {
       panelwise <- FALSE
     }
+  }
+
+  # 'rhoweight' is only used to combine panel-specific estimates of rho
+  if (!panelwise) {
+    rhoweight <- "none"
   }
 
   if (length(index) > 0) {
@@ -154,6 +167,12 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
 
   if (!is.null(lm_temp$weights)) {
     stop("prais_winsten does not support weighted least squares yet.")
+  }
+
+  # Without residual degrees of freedom the residuals are zero and rho cannot be
+  # obtained from them
+  if (lm_temp$df.residual < 1) {
+    stop("The model does not have residual degrees of freedom, so the AR(1) coefficient cannot be estimated.")
   }
 
   # 'lm' omits incomplete observations, so 'data' is reduced to the rows that
@@ -270,6 +289,10 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
         rho <- rho_lm$coefficients[1]
       }
       rho_stats <- append(rho_stats, rho)
+    }
+
+    if (any(!is.finite(rho))) {
+      .pw_no_variation_error()
     }
 
     sample_temp <- .pw_transform(mod, rho, intercept = intercept, groups = groups)

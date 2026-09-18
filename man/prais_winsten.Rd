@@ -63,7 +63,8 @@ A list of class \code{"prais"} containing the following components:
 \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
 \item{xlevels}{a record of the levels of the factors used in fitting.}
 \item{contrasts}{the contrasts used, if the model contains factors.}
-\item{index}{a character specifying the ID and time variables.}
+\item{index}{a character specifying the ID and time variables. Only added if
+panel data were used.}
 }
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
