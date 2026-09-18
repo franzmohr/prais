@@ -1,8 +1,14 @@
 
 # prais
 
-[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
-[![R-CMD-check](https://github.com/FranzMohr/prais/workflows/R-CMD-check/badge.svg)](https://github.com/FranzMohr/prais/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/prais)](https://cran.r-project.org/package=prais)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/prais)](https://cran.r-project.org/package=prais)
+[![Total downloads](https://cranlogs.r-pkg.org/badges/grand-total/prais)](https://cran.r-project.org/package=prais)
+[![R-CMD-check](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/franzmohr/prais/actions/workflows/R-CMD-check.yaml)
+[![License: GPL-2](https://img.shields.io/badge/license-GPL--2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/franzmohr)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/franzmohr)
 
 ## Overview
 
