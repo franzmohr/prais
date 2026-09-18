@@ -1,4 +1,4 @@
-# prais 1.1.5
+# prais 1.2.0
 
 * Fixed the handling of missing values in `prais_winsten`. Observations that were
 dropped by `lm` are now also removed from the data that is used to construct the

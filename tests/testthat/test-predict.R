@@ -87,7 +87,7 @@ test_that("objects without element 'xlevels' can be used", {
   pw <- fit_quietly(y ~ x + g, data = data, index = "time")
   newdata <- data.frame(x = c(25, 35), g = factor(c("a", "b"), levels = levels(data$g)))
 
-  # Objects that were produced by versions prior to 1.1.5
+  # Objects that were produced by versions prior to 1.2.0
   old <- pw
   old$xlevels <- NULL
   old$contrasts <- NULL
