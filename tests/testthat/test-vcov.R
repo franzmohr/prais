@@ -103,3 +103,62 @@ test_that("vcovPC works for unbalanced panels", {
   # Using all matched observations is not the same as using the common periods
   expect_false(isTRUE(all.equal(common, matched)))
 })
+
+test_that("vcovHC agrees with the sandwich package on the transformed model", {
+  skip_if_not_installed("sandwich")
+  data <- ar1_sample(n = 120, rho = .6)
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time", tol = 1e-12, max_iter = 500)
+
+  transformed <- pw_transformed_model(pw)
+  reference <- stats::lm(transformed$y ~ transformed$x - 1)
+
+  for (type in c("HC0", "HC1")) {
+    expect_equal(unname(vcovHC(pw, type = type)),
+                 unname(sandwich::vcovHC(reference, type = type)),
+                 tolerance = 1e-8, info = type)
+  }
+})
+
+test_that("vcovPC agrees with the pcse package", {
+  skip_if_not_installed("pcse")
+  data <- ar1_panel(n_group = 7, n_time = 20, rho = .5)
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"),
+                    tol = 1e-12, max_iter = 500)
+
+  transformed <- pw_transformed_model(pw)
+  reference <- pcse::pcse(stats::lm(transformed$y ~ transformed$x - 1),
+                          groupN = transformed$frame$id,
+                          groupT = transformed$frame$time)
+
+  expect_equal(unname(sqrt(diag(vcovPC(pw, pairwise = FALSE)))),
+               unname(reference$pcse), tolerance = 1e-6)
+})
+
+test_that("vcovPC is correct for panels that begin in different periods", {
+  skip_if_not_installed("pcse")
+  # The panels are ordered by period, so within a period the observations follow
+  # the panel. If the panels do not all begin in the same period, that order is
+  # not the order in which the panels first appear, which the covariances used to
+  # be indexed by.
+  periods <- list(1:20, 5:20, 3:20, 8:20)
+  set.seed(77)
+  data <- do.call(rbind, lapply(seq_along(periods), function(i)
+    data.frame(id = i, time = periods[[i]])))
+  data$x <- stats::rnorm(nrow(data), 5, 2)
+  data$y <- 1 + 2 * data$x + stats::rnorm(nrow(data), 0, 2)
+
+  pw <- suppressWarnings(fit_quietly(y ~ x, data = data, index = c("id", "time"),
+                                     tol = 1e-12, max_iter = 500))
+  # the panels appear in a different order than they are numbered
+  expect_false(identical(as.character(unique(pw$model$id)),
+                         as.character(sort(unique(pw$model$id)))))
+
+  transformed <- pw_transformed_model(pw)
+  model <- stats::lm(transformed$y ~ transformed$x - 1)
+  for (pairwise in c(FALSE, TRUE)) {
+    reference <- pcse::pcse(model, groupN = transformed$frame$id,
+                            groupT = transformed$frame$time, pairwise = pairwise)
+    expect_equal(unname(sqrt(diag(vcovPC(pw, pairwise = pairwise)))),
+                 unname(reference$pcse), tolerance = 1e-6)
+  }
+})

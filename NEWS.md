@@ -1,6 +1,10 @@
 # prais 1.2.0
 
 * Added Michael Škvrňák as a contributor.
+* Fixed `vcovPC.prais` for panels that do not all begin in the same period. The
+covariances of the panels were indexed by the order in which the panels first
+appear, while the observations of a period follow the panel, so the covariances
+were assigned to the wrong panels. The results now agree with package `pcse`.
 * The covariance matrix of the coefficients is obtained from the QR decomposition
 of the transformed model matrix. Inverting its cross product forms the normal
 equations, which squares the condition number and cost accuracy if the regressors

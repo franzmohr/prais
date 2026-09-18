@@ -53,3 +53,28 @@ pw_transform_series <- function(x, rho, intercept = TRUE) {
   }
   result
 }
+
+# The transformed model that the estimator actually fits, built independently of
+# the implementation of the package
+pw_transformed_model <- function(object) {
+  rho <- object$rho[NROW(object$rho), 1]
+  frame <- object$model
+  x <- stats::model.matrix(object$terms, frame)
+  y <- frame[, all.vars(object$terms)[1]]
+  groups <- if (is.null(object$index)) list(seq_len(nrow(x))) else
+    unname(split(seq_len(nrow(x)),
+                 factor(frame[[object$index[1]]], levels = unique(frame[[object$index[1]]]))))
+  step <- sqrt(1 - rho^2)
+  for (pos in groups) {
+    n <- length(pos)
+    x[pos[-1], ] <- x[pos[-1], , drop = FALSE] - rho * x[pos[-n], , drop = FALSE]
+    x[pos[1], ] <- step * x[pos[1], ]
+    y[pos[-1]] <- y[pos[-1]] - rho * y[pos[-n]]
+    y[pos[1]] <- step * y[pos[1]]
+    if ("(Intercept)" %in% colnames(x)) {
+      x[pos, 1] <- 1 - rho
+      x[pos[1], 1] <- step
+    }
+  }
+  list(x = x, y = y, frame = frame)
+}

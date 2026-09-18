@@ -66,7 +66,6 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
       rm(temp)
     }
     timetable <- as.matrix(timetable)
-    fulltime <- timetable
 
     if (!pairwise) {
       timetable <- stats::na.omit(timetable)
@@ -97,16 +96,18 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
     # The meat of the sandwich is crossprod(x_pw, omega_full %*% x_pw), where
     # omega_full is block diagonal with one block per period. It is accumulated
     # block by block, because an n x n matrix would need a prohibitive amount of
-    # memory for larger samples.
+    # memory for larger samples. The block of a period is indexed by the panels of
+    # the observations themselves. Taking the panels from the columns of the time
+    # table instead assumed that they appear in the same order, which is not the
+    # case if the panels do not all begin in the same period.
     meat <- matrix(0, length(x_names), length(x_names),
                    dimnames = list(x_names, x_names))
-    pos <- 0
-    for (i in fulltime[, index[2]]) {
-      temp <- names(stats::na.omit(fulltime[fulltime[, index[2]] == i, ][-1]))
-      ltemp <- length(temp)
-      x_temp <- x_pw[pos + 1:ltemp, , drop = FALSE]
-      meat <- meat + crossprod(x_temp, omega[temp, temp, drop = FALSE] %*% x_temp)
-      pos <- pos + ltemp
+    panel_of_obs <- as.character(positions[, 1])
+    rows_by_period <- split(seq_len(nrow(x_pw)), positions[, 2])
+    for (rows in rows_by_period) {
+      x_temp <- x_pw[rows, , drop = FALSE]
+      block <- omega[panel_of_obs[rows], panel_of_obs[rows], drop = FALSE]
+      meat <- meat + crossprod(x_temp, block %*% x_temp)
     }
 
     result <- cov.unscaled %*% meat %*% cov.unscaled
