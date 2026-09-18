@@ -4,6 +4,8 @@ This is an update, which mainly fixes bugs:
 * `predict.prais` ignored argument `newdata` if it was not passed by name, and it
 could not handle transformed variables, factors and interactions.
 * Estimation failed if the model contained linearly dependent variables.
+* `vcovPC.prais` assigned the covariances of the panels to the wrong panels if the
+panels did not all begin in the same period, which gave wrong standard errors.
 * `vcovPC.prais` returned a covariance matrix of NaN if the panels did not have a
 period in common.
 * Arguments that are not evaluated in the usual way, such as `subset` and `weights`,
@@ -16,6 +18,14 @@ failed with errors that did not point to the cause.
 prohibitive amount of memory for larger samples.
 * The history of the iterations is reported with `message` instead of `cat`, so that
 it can be suppressed.
+
+Please note that results change for users of `vcovPC.prais` whose panels begin in
+different periods, because the previous standard errors were wrong. The results of
+`vcovPC.prais` are now compared with package `pcse` and those of `vcovHC.prais` with
+package `sandwich` in the tests. Covariance matrices are obtained from the QR
+decomposition of the transformed model matrix instead of from the inverse of its
+cross product, which changes standard errors in the last digits if the regressors
+are close to collinear.
 
 The license is changed from GPL-2 to GPL (>= 2). Package `pcse`, which `prais`
 depends on, is licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
