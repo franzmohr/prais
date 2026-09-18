@@ -12,7 +12,7 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/prais)](https://cran.r-
 coverage](https://codecov.io/gh/franzmohr/prais/graph/badge.svg)](https://app.codecov.io/gh/franzmohr/prais)
 [![License: GPL (\>=
 2)](https://img.shields.io/badge/license-GPL%20%28%3E%3D%202%29-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22837936.svg)](https://doi.org/10.5281/zenodo.22837936)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22837936-blue.svg)](https://doi.org/10.5281/zenodo.22837936)
 
 [![GitHub
 Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/franzmohr)
