@@ -36,35 +36,10 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     x_orig <- stats::model.matrix.default(x$terms, x$model)
     mod <- cbind(y_orig, x_orig)
 
-    n <- nrow(mod)
-    panelwise <- FALSE
-    if (is.null(x$index)) {
-      panel <- FALSE
-      groups <- list(1:n)
-    } else {
-      index <- x$index
-      groups_temp <- unique(mt_model[, index[1]])
-      groups <- c()
-      for (i in 1:length(groups_temp)){
-        pos_temp <- which(mt_model[, index[1]] == groups_temp[i])
-        names(pos_temp) <- NULL
-        groups <- c(groups, list(pos_temp))
-        rm(pos_temp)
-      }
-      rm(groups_temp)
-      panel <- TRUE
-      if (length(rho) > 1) {panelwise <- TRUE}
-    }
+    groups <- .pw_groups(x, nrow(mod))
 
     pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
     pw_data <- stats::na.omit(pw_data)
-    if (intercept) {
-      p_int <- 1L
-      sst <- sum((pw_data[, 1] - mean(pw_data[, 1]))^2)
-    } else {
-      p_int <- 0L
-      sst <- sum(pw_data[, 1]^2)
-    }
 
     rdf <- x$df.residual
     x_pw <- as.matrix(pw_data[, x_names])
@@ -78,7 +53,12 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
            HC0 = {omega <- res^2},
            HC1 = {omega <- res^2 * n / rdf})
 
-    result <- tcrossprod(cov.unscaled, x_pw) %*% diag(omega, n) %*% x_pw %*% cov.unscaled
+    # The meat of the sandwich is crossprod(x_pw, diag(omega) %*% x_pw). It is
+    # calculated by scaling the rows of x_pw, because an n x n matrix would need
+    # a prohibitive amount of memory for larger samples.
+    meat <- crossprod(x_pw * sqrt(omega))
+
+    result <- cov.unscaled %*% meat %*% cov.unscaled
   } else {
     result <- matrix(NA, 0, 0)
   }
