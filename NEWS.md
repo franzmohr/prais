@@ -58,6 +58,15 @@ a model (#13). The methods are registered when `broom` is loaded, so `broom`
 remains a suggested package and the generics are not re-exported, unlike in the
 version of the extension that was part of release 1.1.3. Since delayed registration requires
 R (>= 3.6.0), the minimum version of R was raised accordingly.
+* `predict.prais` gained the arguments `se.fit`, `interval` and `level`, so that
+the standard errors and the confidence interval of the predicted conditional mean
+can be obtained (#10). They are based on the covariance matrix of `vcov.prais` and
+the quantiles of the *t* distribution with the residual degrees of freedom of the
+model, so they agree with the standard errors of `summary.prais` and the intervals
+of `confint.prais`. Prediction intervals for an individual observation are not
+available, because their variance would depend on the serial correlation of the
+error of the predicted period, which the predictions do not use. The default
+result is unchanged. Thanks to Angel Paternina for the request.
 * Added `vcov.prais`, which returns the covariance matrix of the coefficients
 that the standard errors of `summary.prais` are based on. Functions that obtain
 the covariance matrix from a model, such as `lmtest::coeftest`, previously
