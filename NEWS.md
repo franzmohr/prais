@@ -1,4 +1,4 @@
-# prais 1.2.0.9000
+# prais 1.3.0
 
 * `prais_winsten` accepts a fitted panel model of class `plm` in place of its
 arguments `formula`, `data` and `index`, which are taken from the model (#11).
