@@ -42,9 +42,11 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
     mod <- cbind(y_orig, x_orig)
     index <- x$index
     groups <- .pw_groups(x, nrow(mod))
+    steps <- .pw_steps(x, groups)
     n_group <- length(groups)
 
-    pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
+    pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups,
+                             steps = steps)
     pw_data <- stats::na.omit(pw_data)
 
     x_pw <- as.matrix(pw_data[, x_names])

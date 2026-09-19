@@ -37,8 +37,10 @@ vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {
     mod <- cbind(y_orig, x_orig)
 
     groups <- .pw_groups(x, nrow(mod))
+    steps <- .pw_steps(x, groups)
 
-    pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
+    pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups,
+                             steps = steps)
     pw_data <- stats::na.omit(pw_data)
 
     rdf <- x$df.residual

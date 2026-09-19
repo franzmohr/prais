@@ -1,5 +1,37 @@
 # prais 1.2.0.9000
 
+* Gaps in the time variable are taken into account by the Prais-Winsten
+transformation. Two observations of a panel that lie *k* periods apart are
+correlated by *rho^k* under an AR(1) process, so an observation whose predecessor
+lies *k* periods back is now differenced against that power and rescaled to keep
+the variance of the transformed errors constant. The estimates are those of
+generalised least squares evaluated at the periods that were observed, while
+previously the observations that surround a gap were treated as if they were
+consecutive. As a gap grows, the transformation approaches the one of the first
+observation of a panel, so that an observation after a long gap effectively starts
+a new spell. Equally spaced data are unaffected, and the warning that a gap used
+to raise is gone. The same applies to the gap that an observation dropped for
+missing values leaves behind (#12). Thanks to Sebastian Krantz for pointing out
+that the lags have to be taken from the time variable rather than from adjacent
+rows.
+* The distances between the periods are counted in steps of the greatest common
+divisor of the differences of the time variable, so that quarterly, monthly or
+biennial data are handled without further arguments and the estimates no longer
+depend on the unit the periods are expressed in. `Date` and `POSIXct` variables
+are supported, which the check of the time variable previously skipped, because
+`is.numeric` is `FALSE` for them. If the periods are not multiples of a common
+step, a warning is issued and the observations that surround a gap are treated as
+if they were consecutive, as before.
+* The estimate of *rho* is still obtained from the residuals of an observation and
+its predecessor, whether or not a gap lies between them. Since the correlation
+across a gap is *rho^k* rather than *rho*, the estimate is attenuated towards zero
+if a large share of the observations follows a gap. This is now documented.
+* Added the component `timeid` to objects of class `prais`, which holds the
+periods of the observations counted in whole steps from the first period of their
+panel. `summary.prais` and the covariance matrices repeat the transformation on
+the data of the model and need the same distances, and the time variable is not
+part of the model frame of a time series.
+
 * Added methods for the generics `tidy`, `glance` and `augment` of package
 `broom`, which summarise the coefficients, the goodness of fit and the fitted
 values of an estimated model in tidy data frames. `glance` also reports the AR(1)

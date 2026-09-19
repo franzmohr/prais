@@ -67,12 +67,17 @@ pw_transformed_model <- function(object) {
   step <- sqrt(1 - rho^2)
   for (pos in groups) {
     n <- length(pos)
-    x[pos[-1], ] <- x[pos[-1], , drop = FALSE] - rho * x[pos[-n], , drop = FALSE]
+    # Distance to the previous observation of the panel. The closed form of the
+    # scale is used here, which is a check on the geometric series of the package.
+    k <- if (is.null(object$timeid)) rep(1, n - 1) else diff(object$timeid[pos])
+    lag <- rho^k
+    scale <- sqrt((1 - rho^2) / (1 - rho^(2 * k)))
+    x[pos[-1], ] <- scale * (x[pos[-1], , drop = FALSE] - lag * x[pos[-n], , drop = FALSE])
     x[pos[1], ] <- step * x[pos[1], ]
-    y[pos[-1]] <- y[pos[-1]] - rho * y[pos[-n]]
+    y[pos[-1]] <- scale * (y[pos[-1]] - lag * y[pos[-n]])
     y[pos[1]] <- step * y[pos[1]]
     if ("(Intercept)" %in% colnames(x)) {
-      x[pos, 1] <- 1 - rho
+      x[pos[-1], 1] <- scale * (1 - lag)
       x[pos[1], 1] <- step
     }
   }

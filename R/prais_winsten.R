@@ -24,9 +24,9 @@
 #' @param ... arguments passed to \code{\link[stats]{lm}}.
 #'
 #' @details Observations with missing values in the variables of \code{formula} are
-#' dropped before estimation, as in \code{\link[stats]{lm}}. Since the Prais-Winsten
-#' transformation uses the previous observation of a panel, the observations that
-#' surround a dropped one are treated as if they were consecutive.
+#' dropped before estimation, as in \code{\link[stats]{lm}}. The gap that a dropped
+#' observation leaves in the time variable is treated like any other gap, which is
+#' described below.
 #'
 #' Estimates of \eqn{\rho} are bounded to the interval \eqn{[-1, 1]}, because the
 #' transformation of the first observation of a panel requires
@@ -34,9 +34,32 @@
 #' the first observation of each panel becomes zero and does not contribute to the
 #' estimates, so that the estimator effectively becomes the Cochrane-Orcutt estimator.
 #'
-#' The time variable is only used to order the observations. If it is not equally
-#' spaced, a warning is issued, because the observations that surround a gap are
-#' treated as if they were consecutive.
+#' The time variable orders the observations and gives the distance between them.
+#' Gaps are allowed: two observations of a panel that lie \eqn{k} periods apart have
+#' the correlation \eqn{\rho^k} under an AR(1) process, so such an observation is
+#' transformed to
+#' \deqn{(1 + \rho^2 + ... + \rho^{2(k - 1)})^{-1 / 2} (x_t - \rho^k x_{t - k}),}
+#' which is the generalised least squares transformation evaluated at the periods
+#' that were observed. For consecutive periods this is the usual
+#' \eqn{x_t - \rho x_{t - 1}}, so equally spaced data are unaffected. As a gap grows,
+#' \eqn{\rho^k} approaches zero and the factor approaches \eqn{(1 - \rho^2)^{(1 / 2)}},
+#' so that the observation after a long gap is transformed like the first observation
+#' of a panel.
+#'
+#' The distances are counted in steps of the smallest length that divides all
+#' differences of the time variable, so that a variable measured in, say, quarters
+#' or days is handled without further arguments, and so that the estimates do not
+#' depend on the unit the periods are expressed in. \code{Date} and \code{POSIXct}
+#' variables are supported. If the periods are not multiples of a common step, a
+#' warning is issued and the observations that surround a gap are treated as if they
+#' were consecutive. The same applies without a warning if the time variable is not
+#' numeric, such as a character vector, which only orders the observations and
+#' carries no distance between them.
+#'
+#' The estimate of \eqn{\rho} itself is obtained from the residuals of an
+#' observation and its predecessor, whether or not a gap lies between them. Since
+#' the correlation across a gap is \eqn{\rho^k} rather than \eqn{\rho}, the estimate
+#' is attenuated towards zero if a large share of the observations follows a gap.
 #'
 #' If \code{panelwise = TRUE}, \code{twostep = FALSE} and \code{rhoweight = "none"},
 #' each individual estimate of \eqn{rho} is re-estimated until convergence is achieved for all coefficients.
@@ -62,6 +85,9 @@
 #' \item{contrasts}{the contrasts used, if the model contains factors.}
 #' \item{index}{a character specifying the ID and time variables. Only added if
 #' panel data were used.}
+#' \item{timeid}{the periods of the observations, counted in whole steps from the
+#' first period of the panel they belong to. \code{NULL} if no index was given, or
+#' if the periods are not multiples of a common step.}
 #' \item{x}{the model matrix after the Prais-Winsten transformation. Only added
 #' if the data are a single time series.}
 #' \item{y}{the response after the Prais-Winsten transformation. Only added if
@@ -233,6 +259,24 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
     groups <- list(seq_len(nrow(data)))
   }
 
+  # Distance of every observation from its predecessor within the same panel,
+  # which the transformation uses to raise rho to that power. Without an index
+  # there is no time variable, so the observations are taken to be consecutive.
+  timeid <- NULL
+  if (length(index) > 0) {
+    timeid <- .pw_timeid(data[, index[length(index)]], groups)
+  }
+  steps <- NULL
+  if (!is.null(timeid)) {
+    lag_pos <- .pw_lag_positions(groups)
+    steps <- timeid[lag_pos$rest] - timeid[lag_pos$lagged]
+    # Equally spaced periods leave nothing for the general transformation to do,
+    # and skipping it keeps the arithmetic of the common case untouched
+    if (all(steps == 1)) {
+      steps <- NULL
+    }
+  }
+
   # A panel-specific rho is obtained from the residuals of a panel and their lag,
   # for which at least two observations are required
   if (panelwise) {
@@ -351,7 +395,8 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
       .pw_no_variation_error()
     }
 
-    sample_temp <- .pw_transform(mod, rho, intercept = intercept, groups = groups)
+    sample_temp <- .pw_transform(mod, rho, intercept = intercept, groups = groups,
+                                 steps = steps)
     sample_temp <- stats::na.omit(sample_temp)
     y_temp <- matrix(sample_temp[, 1], dimnames = list(NULL, y_name))
     x_temp <- matrix(sample_temp[, -1], nrow = nrow(sample_temp), dimnames = list(NULL, x_name))
@@ -399,6 +444,12 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
   # As in 'lm', 'contrasts' is only added if the model contains factors
   result$xlevels <- mt_xlevels
   result$contrasts <- mt_contrasts
+
+  # 'summary' and the covariance matrices repeat the transformation on the data of
+  # the model, for which they need the same distances between the periods. The
+  # time variable is not part of the model frame of a time series, so the step
+  # counts are carried by the object itself.
+  result$timeid <- timeid
 
   if (panel) {
     result$index <- index

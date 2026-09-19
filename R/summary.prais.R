@@ -66,8 +66,10 @@ summary.prais <- function(object, ...){
   n <- nrow(mod)
   panel <- !is.null(object$index)
   groups <- .pw_groups(object, n)
+  steps <- .pw_steps(object, groups)
 
-  pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups)
+  pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups,
+                           steps = steps)
   if (intercept) {
     p_int <- 1L
     sst <- sum((pw_data[, 1] - mean(pw_data[, 1], na.rm = TRUE))^2, na.rm = TRUE)
