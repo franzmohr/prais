@@ -47,6 +47,11 @@ panel. `summary.prais` and the covariance matrices repeat the transformation on
 the data of the model and need the same distances, and the time variable is not
 part of the model frame of a time series.
 
+* Added a vignette that walks through the estimation of a time series model and
+of a panel model. It covers how to read the output of `summary`, the comparison
+with ordinary least squares, confidence intervals and predictions, panel specific
+estimates of *rho* and their weighted average, panel-corrected standard errors,
+gaps in the time variable and the interface to `plm`.
 * Added methods for the generics `tidy`, `glance` and `augment` of package
 `broom`, which summarise the coefficients, the goodness of fit and the fitted
 values of an estimated model in tidy data frames. `glance` also reports the AR(1)

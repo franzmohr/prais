@@ -17,6 +17,8 @@ matrix from a model, such as `lmtest::coeftest`, previously failed with "no
 applicable method for 'vcov'".
 * Added methods for the generics `tidy`, `glance` and `augment` of package
 `broom`.
+* Added a vignette that walks through the estimation of a time series model and
+of a panel model.
 * Fixed `summary.prais`, `vcovHC.prais` and `vcovPC.prais` for panel models whose
 formula contains a transformed term, such as `log(x)`, whose source column is not
 part of the model frame. They failed with "object 'x' not found".
@@ -36,7 +38,8 @@ back on the model frame, so that they described the untransformed model.
 
 The minimum version of R is raised from 3.2.0 to 3.6.0, because the methods for
 the generics of `broom` are registered on load, which requires that version.
-Packages `broom`, `plm` and `tibble` are added to the suggested packages.
+Packages `broom`, `plm`, `tibble`, `knitr` and `rmarkdown` are added to the
+suggested packages, the last two for the new vignette.
 
 ## Test environments
 local: Windows 11, R 4.6.1

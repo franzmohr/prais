@@ -1,0 +1,267 @@
+---
+title: "Estimating models with AR(1) errors"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Estimating models with AR(1) errors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## When to use the estimator
+
+If the errors of a linear regression follow an AR(1) process, the coefficients of
+ordinary least squares are still unbiased, but they are no longer efficient and
+their standard errors are wrong. The Prais-Winsten estimator corrects for this by
+transforming the data so that the transformed errors are serially uncorrelated,
+and by estimating the coefficients and the autocorrelation of the errors in turn
+until the latter converges.
+
+The estimator assumes that the regressors are *strictly exogenous*. A model that
+contains a lagged dependent variable does not satisfy this, and its estimates
+would be inconsistent. The transformation also assumes an AR(1) process, not a
+higher order one.
+
+The Cochrane-Orcutt estimator solves the same problem by dropping the first
+observation of the sample. Prais-Winsten keeps it and rescales it instead, which
+matters in short samples.
+
+```{r}
+library(prais)
+```
+
+## A simple time series model
+
+The package ships the `barium` data, monthly observations from the U.S. chemical
+industry. The column `t` is the time index.
+
+```{r}
+data("barium")
+
+str(barium[, c("lchnimp", "lchempi", "lgas", "lrtwex", "t")])
+```
+
+The model is specified as it would be for `lm`. Argument `index` names the time
+variable, by which the observations are ordered before the transformation is
+applied. Without it the estimator would have to assume that the rows already are
+in the right order.
+
+```{r}
+pw <- prais_winsten(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
+                    data = barium, index = "t")
+```
+
+The iterations are reported as they happen, which shows how the estimate of the
+AR(1) coefficient *rho* settles down. They are ordinary messages and can be
+silenced with `suppressMessages`.
+
+### Reading the output
+
+```{r}
+summary(pw)
+```
+
+Three parts of the output are specific to this estimator.
+
+* The **AR(1) coefficient** and the number of iterations it took to converge. A
+value clearly different from zero is what justifies using the estimator in the
+first place.
+* The **residuals of the transformed model**, rather than those of the original
+one. The transformed model is what is actually fitted by least squares, so its
+residuals are the ones whose properties matter.
+* Two **Durbin-Watson statistics**. The first belongs to the original model and
+the second to the transformed one. A value near 2 indicates no first order serial
+correlation, so the pair shows whether the transformation did its job.
+
+It is worth comparing the result with ordinary least squares.
+
+```{r}
+ols <- lm(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
+          data = barium)
+
+round(cbind("OLS" = coef(ols), "PW" = coef(pw),
+            "SE (OLS)" = sqrt(diag(vcov(ols))),
+            "SE (PW)" = sqrt(diag(vcov(pw)))), 4)
+```
+
+Some coefficients move a good deal, `lgas` most of all. Every standard error is
+larger than its counterpart from least squares, here by between eight and thirty
+per cent, because least squares treats positively correlated errors as though
+they carried more independent information than they do. Which of the two effects
+dominates depends on the data; the point is that the corrected standard errors
+are the ones to report.
+
+### Confidence intervals and predictions
+
+`confint` uses the *t* distribution with the residual degrees of freedom of the
+model, so the intervals agree with the p-values of the summary.
+
+```{r}
+confint(pw)
+```
+
+`predict` returns the conditional mean of the model. With
+`interval = "confidence"` the interval of that mean is added. The AR(1) structure
+of the errors is not used for the prediction, which is why an interval for an
+individual future observation is not available.
+
+```{r}
+head(predict(pw, interval = "confidence"))
+```
+
+Passing `newdata` predicts for observations that were not part of the estimation.
+The variables of the formula do not have to be transformed beforehand.
+
+### Robust standard errors
+
+If the errors are heteroskedastic on top of being serially correlated, the
+covariance matrix of the transformed model can be made robust with `vcovHC`.
+
+```{r}
+sqrt(diag(vcovHC(pw, type = "HC1")))
+```
+
+## A panel model
+
+For panel data, `index` takes two names, the ID variable first and the time
+variable second. The transformation is then applied within each panel, so that
+the last observation of one panel is never differenced against the first
+observation of the next.
+
+A small balanced panel with a known AR(1) coefficient makes it easy to see what
+the estimator recovers.
+
+```{r}
+set.seed(123)
+
+n_id <- 8
+n_time <- 25
+rho <- .6
+
+panel <- do.call(rbind, lapply(seq_len(n_id), function(i) {
+  u <- rnorm(n_time, 0, 2)
+  for (j in 2:n_time) {
+    u[j] <- u[j] + rho * u[j - 1]
+  }
+  x <- rnorm(n_time, 10, 3)
+  data.frame(id = i, year = seq_len(n_time), x = x, y = 5 + 2 * x + u)
+}))
+
+head(panel)
+```
+
+```{r}
+pw_panel <- prais_winsten(y ~ x, data = panel, index = c("id", "year"))
+
+summary(pw_panel)
+```
+
+The coefficient on `x` is recovered almost exactly, and the Durbin-Watson
+statistic of the transformed model is much closer to 2 than that of the original
+one. The estimate of *rho* lands below the 0.6 the errors were generated with.
+That is the usual downward bias of an autocorrelation estimated from the
+residuals of a short series, which is of the order of one divided by the number
+of periods per panel, and it shrinks as the panels get longer. The correction
+does not depend on hitting *rho* exactly.
+
+### One coefficient per panel
+
+By default a single *rho* is estimated from all panels together. With
+`panelwise = TRUE` every panel gets its own, which is appropriate if the panels
+differ in how persistent their errors are.
+
+```{r}
+pw_pw <- prais_winsten(y ~ x, data = panel, index = c("id", "year"),
+                       panelwise = TRUE)
+
+round(pw_pw$rho[nrow(pw_pw$rho), ], 3)
+```
+
+Panel specific estimates come from short series and are therefore noisy. Argument
+`rhoweight` averages them into a single coefficient, weighted by the length of
+each panel, which trades some flexibility for a more stable estimate.
+
+```{r}
+pw_t1 <- prais_winsten(y ~ x, data = panel, index = c("id", "year"),
+                       panelwise = TRUE, rhoweight = "T1")
+
+pw_t1$rho[nrow(pw_t1$rho), ]
+```
+
+### Panel-corrected standard errors
+
+Errors are often correlated across panels within the same period. `vcovPC`
+implements the panel-corrected standard errors of Beck and Katz (1995) for that
+case.
+
+```{r}
+sqrt(diag(vcovPC(pw_panel)))
+```
+
+`pairwise = FALSE`, the default, uses only the periods that all panels have in
+common. `pairwise = TRUE` uses every period that a given pair of panels shares,
+which matters for unbalanced panels.
+
+### Gaps in the time variable
+
+Two observations that lie *k* periods apart are correlated by *rho^k* under an
+AR(1) process. The transformation accounts for this, so a panel with missing
+periods is not treated as if its observations were consecutive.
+
+```{r}
+gapped <- panel[panel$year != 10, ]
+
+pw_gap <- prais_winsten(y ~ x, data = gapped, index = c("id", "year"))
+
+pw_gap$rho[nrow(pw_gap$rho), ]
+```
+
+The periods are counted in steps of the greatest common divisor of the
+differences of the time variable, so quarterly, monthly or biennial data need no
+further arguments, and `Date` variables are supported.
+
+### Models estimated with plm
+
+A pooled panel model that was fitted with `plm::plm` can be handed to
+`prais_winsten` in place of the formula, the data and the index, which are then
+taken from the model.
+
+```{r, eval = requireNamespace("plm", quietly = TRUE)}
+data("Grunfeld", package = "plm")
+
+pooled <- plm::plm(inv ~ value + capital, data = Grunfeld,
+                   index = c("firm", "year"), model = "pooling")
+
+coef(suppressMessages(prais_winsten(pooled)))
+```
+
+Only models estimated with `model = "pooling"` are supported, because the
+Prais-Winsten estimator obtains all of its estimates by ordinary least squares.
+The within and the random effects estimator apply a transformation of their own,
+which does not leave the AR(1) structure of the errors intact. Fixed effects can
+be obtained by putting the dummy variables into the formula, as in
+`y ~ x + factor(id)`.
+
+## Tidy output
+
+Methods for the generics of
+[broom](https://cran.r-project.org/package=broom) are available, which packages
+for publishable regression tables use to read a model.
+
+```{r, eval = requireNamespace("broom", quietly = TRUE)}
+broom::tidy(pw_panel, conf.int = TRUE)
+```
+
+## References
+
+Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series
+cross-section data. *American Political Science Review* 89, 634-647.
+
+Prais, S. J. and Winsten, C. B. (1954): Trend Estimators and Serial Correlation.
+*Cowles Commission Discussion Paper*, 383 (Chicago).
+
+Wooldridge, J. M. (2016): *Introductory Econometrics. A Modern Approach*. 6th ed.
+Mason, OH: South-Western Cengage Learning.

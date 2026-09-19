@@ -16,10 +16,13 @@ Imports:
 Suggests: 
     broom,
     haven,
+    knitr,
     lmtest,
     plm,
+    rmarkdown,
     testthat (>= 3.0.0),
     tibble
+VignetteBuilder: knitr
 URL: https://github.com/franzmohr/prais
 BugReports: https://github.com/franzmohr/prais/issues
 Collate:
