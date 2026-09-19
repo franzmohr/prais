@@ -1,5 +1,20 @@
 # prais 1.2.0.9000
 
+* `prais_winsten` accepts a fitted panel model of class `plm` in place of its
+arguments `formula`, `data` and `index`, which are taken from the model (#11).
+Since the estimator obtains all its estimates by ordinary least squares, only
+models that were estimated with `model = "pooling"` are supported, and the within
+and the random effects model are rejected with a message that points at the dummy
+variables of the formula, because their own transformation does not leave the
+AR(1) structure of the errors intact. The data are obtained by evaluating the
+`data` argument of the call of the model, so the object it refers to must still be
+available. The model frame of the fitted model cannot be used instead, because its
+columns are named after the terms of the formula, so that a term such as
+`factor(id)` or `log(x)` could not be evaluated again. If the data are a
+`pdata.frame`, the time variable is turned back into a number, since the index of
+a `pdata.frame` is stored as factors, which order the periods but do not carry the
+distances between them that the transformation of a gap requires. Thanks to Julian
+Jäcker for the request.
 * Gaps in the time variable are taken into account by the Prais-Winsten
 transformation. Two observations of a panel that lie *k* periods apart are
 correlated by *rho^k* under an AR(1) process, so an observation whose predecessor

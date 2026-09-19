@@ -21,14 +21,17 @@ prais_winsten(
 }
 \arguments{
 \item{formula}{an object of class \code{"formula"} (or one that can be coerced to that class):
-a symbolic description of the model to be fitted.}
+a symbolic description of the model to be fitted. Alternatively, a fitted panel model of
+class \code{"plm"}, from which the formula, the data and the index are taken. See 'Details'.}
 
 \item{data}{a data frame containing the variables in the model. If panel data is used,
-it must also contain the ID and time variables.}
+it must also contain the ID and time variables. Must not be specified if \code{formula}
+is a model of class \code{"plm"}.}
 
 \item{index}{a character vector specifying the ID and time variables. If only one variable
 is provided, it is assumed to be the time variable and the data will be reordered
-accordingly. The specified variables must not contain \code{NA} values.}
+accordingly. The specified variables must not contain \code{NA} values. Must not be
+specified if \code{formula} is a model of class \code{"plm"}.}
 
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 
@@ -80,6 +83,19 @@ and the error autocorrelation of the specified model until sufficient convergenc
 the AR(1) coefficient is reached. All estimates are obtained by OLS.
 }
 \details{
+If \code{formula} is a fitted panel model of class \code{"plm"}, the formula,
+the data and the index of the panel are taken from it, and the arguments \code{data}
+and \code{index} must not be specified. Since the Prais-Winsten estimator obtains all
+its estimates by ordinary least squares, only models that were estimated with
+\code{model = "pooling"} are supported. The within and the random effects estimator
+apply a transformation of their own, which does not leave the AR(1) structure of the
+errors intact. Fixed effects can be estimated by adding the dummy variables to the
+formula, as in \code{y ~ x + factor(id)}. The data are obtained by evaluating the
+\code{data} argument of the call of the model, so the object it refers to must still
+be available. The model frame of the fitted model cannot be used instead, because its
+columns are named after the terms of the formula, so that a term such as
+\code{factor(id)} or \code{log(x)} could not be evaluated again.
+
 Observations with missing values in the variables of \code{formula} are
 dropped before estimation, as in \code{\link[stats]{lm}}. The gap that a dropped
 observation leaves in the time variable is treated like any other gap, which is
@@ -166,6 +182,16 @@ pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
 # Estimate
 pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
 summary(pw)
+
+# A fitted pooled panel model can be used instead of formula, data and index
+\donttest{
+if (requireNamespace("plm", quietly = TRUE)) {
+  data("Grunfeld", package = "plm")
+  pooled <- plm::plm(inv ~ value + capital, data = Grunfeld,
+                     index = c("firm", "year"), model = "pooling")
+  summary(prais_winsten(pooled))
+}
+}
 
 }
 \references{

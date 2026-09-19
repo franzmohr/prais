@@ -83,6 +83,26 @@ summary(pw)
     ## Durbin-Watson statistic (original): 1.458 
     ## Durbin-Watson statistic (transformed): 2.087
 
+### Panel models estimated with plm
+
+A pooled panel model that was estimated with `plm::plm` can be passed to
+`prais_winsten` instead of the formula, the data and the index, which are
+taken from the model. Since the Prais-Winsten estimator obtains all its
+estimates by ordinary least squares, only models that were estimated with
+`model = "pooling"` are supported. Fixed effects can be estimated by adding
+the dummy variables to the formula, as in `y ~ x + factor(id)`.
+
+``` r
+library(plm)
+
+data("Grunfeld", package = "plm")
+
+pooled <- plm(inv ~ value + capital, data = Grunfeld,
+              index = c("firm", "year"), model = "pooling")
+
+summary(prais_winsten(pooled, panelwise = TRUE, rhoweight = "T1"))
+```
+
 ## Robust standard errors
 
 ### White’s estimator
