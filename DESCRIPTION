@@ -21,6 +21,7 @@ Suggests:
     plm,
     rmarkdown,
     testthat (>= 3.0.0),
+    texreg,
     tibble
 VignetteBuilder: knitr
 URL: https://github.com/franzmohr/prais

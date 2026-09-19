@@ -38,8 +38,9 @@ back on the model frame, so that they described the untransformed model.
 
 The minimum version of R is raised from 3.2.0 to 3.6.0, because the methods for
 the generics of `broom` are registered on load, which requires that version.
-Packages `broom`, `plm`, `tibble`, `knitr` and `rmarkdown` are added to the
-suggested packages, the last two for the new vignette.
+Packages `broom`, `plm`, `tibble`, `knitr`, `rmarkdown` and `texreg` are added to
+the suggested packages, `knitr` and `rmarkdown` for the new vignette and `texreg`
+for the tests of the reverse dependency.
 
 ## Test environments
 local: Windows 11, R 4.6.1
@@ -64,7 +65,11 @@ release, and add the reason here if so.
 
 ## Reverse dependencies
 
-`texreg` is the only reverse dependency and enhances `prais`.
-
-TODO before submission: check `texreg` against this version and confirm that its
-`extract` method gives the same results as before.
+`texreg` is the only reverse dependency and enhances `prais`. Its method for the
+generic `extract`, which is the only point of contact between the two packages,
+was run against version 1.2.0 and against this version on the same time series
+and panel data, the latter with a pooled and with a panel specific AR(1)
+coefficient. The coefficient names, the coefficients, the standard errors, the
+p-values, the goodness of fit measures and the rendered table are identical in
+every case. The method is now covered by the tests of this package, which are
+skipped where `texreg` is not installed.
