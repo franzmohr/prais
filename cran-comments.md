@@ -1,51 +1,67 @@
-This is an update, which mainly fixes bugs:
+This is a feature update.
 
-* Estimation failed if a variable of the model contained NA values.
-* `predict.prais` ignored argument `newdata` if it was not passed by name, and it
-could not handle transformed variables, factors and interactions.
-* Estimation failed if the model contained linearly dependent variables.
-* `vcovPC.prais` assigned the covariances of the panels to the wrong panels if the
-panels did not all begin in the same period.
-* `vcovPC.prais` returned a covariance matrix of NaN if the panels did not have a
-period in common.
-* Arguments that are not evaluated in the usual way, such as `subset` and `weights`,
-were not passed on to `lm` correctly.
-* `rhoweight` failed if the AR(1) coefficient was not panel specific.
-* Models for which the AR(1) coefficient cannot be obtained, such as a panel with a
-single observation if `panelwise = TRUE`, and inadmissible values of `max_iter`,
-failed with errors that did not point to the cause.
-* `vcovHC.prais` and `vcovPC.prais` no longer build an n x n matrix, which required a
-prohibitive amount of memory for larger samples.
-* The history of the iterations is reported with `message` instead of `cat`, so that
-it can be suppressed.
+* `prais_winsten` accepts a fitted panel model of class `plm` in place of its
+arguments `formula`, `data` and `index`, which are taken from the model. Only
+models that were estimated with `model = "pooling"` are supported, because the
+Prais-Winsten estimator obtains all its estimates by ordinary least squares.
+* The Prais-Winsten transformation takes gaps in the time variable into account.
+Two observations of a panel that lie *k* periods apart are correlated by *rho^k*
+under an AR(1) process, so an observation whose predecessor lies *k* periods back
+is differenced against that power and rescaled to keep the variance of the
+transformed errors constant.
+* `predict.prais` gained the arguments `se.fit`, `interval` and `level`, so that
+the standard errors and the confidence interval of the predicted conditional mean
+can be obtained.
+* Added `vcov.prais` and `confint.prais`. Functions that obtain the covariance
+matrix from a model, such as `lmtest::coeftest`, previously failed with "no
+applicable method for 'vcov'".
+* Added methods for the generics `tidy`, `glance` and `augment` of package
+`broom`.
+* Fixed `summary.prais`, `vcovHC.prais` and `vcovPC.prais` for panel models whose
+formula contains a transformed term, such as `log(x)`, whose source column is not
+part of the model frame. They failed with "object 'x' not found".
 
-Please note that results change for users of `vcovPC.prais` whose panels begin in
-different periods, because the previous standard errors were wrong. The results of
-`vcovPC.prais` are now compared with package `pcse` and those of `vcovHC.prais` with
-package `sandwich` in the tests. Covariance matrices are obtained from the QR
-decomposition of the transformed model matrix instead of from the inverse of its
-cross product, which changes standard errors in the last digits if the regressors
-are close to collinear.
+Please note that results change for users whose time variable contains gaps,
+including the gap that an observation dropped for missing values leaves behind.
+The observations that surround a gap were previously treated as if they were
+consecutive, and the warning that a gap used to raise is gone. Equally spaced
+data are unaffected.
 
-The license is changed from GPL-2 to GPL (>= 2). Package `pcse`, which `prais`
-depends on, is licensed under GPL (>= 3), with which GPL-2 alone is not compatible.
+Results also change for the tests of package `lmtest`, such as `dwtest`, `bgtest`
+and `bptest`, applied to a time series model. Those tests do not use the residuals
+of the model they are given, but take the components `x` and `y` and re-estimate
+the model by ordinary least squares. Both are now the transformed model matrix and
+the transformed response, while previously they were absent and the tests fell
+back on the model frame, so that they described the untransformed model.
 
-The variables specified in argument `index` are now checked. Periods that do not
-uniquely identify the observations are rejected, which is stricter than before.
-
-The package also gained unit tests.
+The minimum version of R is raised from 3.2.0 to 3.6.0, because the methods for
+the generics of `broom` are registered on load, which requires that version.
+Packages `broom`, `plm` and `tibble` are added to the suggested packages.
 
 ## Test environments
+local: Windows 11, R 4.6.1
+
+TODO before submission: run and confirm the remaining environments.
 GitHub Actions: ubuntu 24.04 (R-devel, R-release, R-oldrel-1), macOS (R-release),
 windows (R-release)
-win-builder: R-release
-local: Windows 11, R 4.6.1
+win-builder: R-release, R-devel
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+Local check of the built tarball with `R CMD check --as-cran`:
+
+0 errors | 0 warnings | 1 note
+
+The note is from 'checking CRAN incoming feasibility' and reports the maintainer
+address together with "Days since last update: 1", because version 1.2.0 was
+published on CRAN on 2026-09-18.
+
+TODO before submission: decide whether to submit this soon after the previous
+release, and add the reason here if so.
 
 ## Reverse dependencies
 
-`texreg` is the only reverse dependency and enhances `prais`. Its `extract` method
-was checked against this version and gives the same results as before.
+`texreg` is the only reverse dependency and enhances `prais`.
+
+TODO before submission: check `texreg` against this version and confirm that its
+`extract` method gives the same results as before.
