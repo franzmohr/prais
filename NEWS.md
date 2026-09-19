@@ -21,6 +21,18 @@ residual degrees of freedom of the model, so they agree with the p-values of
 `summary.prais` and with the intervals of `tidy`. Without the method they would
 be obtained by `confint.default`, which uses the quantiles of the normal
 distribution and is therefore too narrow in small samples.
+* The transformed model matrix and the transformed response are added to the
+estimated object as the components `x` and `y`. The tests of package `lmtest`,
+such as `dwtest`, `bgtest` and `bptest`, do not use the residuals of the model
+they are given, but take those two components and re-estimate the model by
+ordinary least squares. Without them both were taken from the model frame, which
+holds the original data, so the tests described the untransformed model and
+reported the same Durbin-Watson statistic as before the correction for serial
+correlation (#16). They now refer to the estimated model. The components are not
+added for panel data, because the tests difference the residuals over all
+observations at once, which mixes the last observation of a panel with the first
+observation of the next one. `summary` reports a Durbin-Watson statistic that
+respects the panels instead.
 * The Prais-Winsten transformation is applied to all panels at once instead of
 one panel at a time, which allocated a copy of the involved rows for every panel.
 The results are unchanged.

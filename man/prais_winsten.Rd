@@ -65,6 +65,10 @@ A list of class \code{"prais"} containing the following components:
 \item{contrasts}{the contrasts used, if the model contains factors.}
 \item{index}{a character specifying the ID and time variables. Only added if
 panel data were used.}
+\item{x}{the model matrix after the Prais-Winsten transformation. Only added
+if the data are a single time series.}
+\item{y}{the response after the Prais-Winsten transformation. Only added if
+the data are a single time series.}
 }
 \description{
 The Prais-Winsten estimator takes into account AR(1) serial correlation of the errors
@@ -98,6 +102,27 @@ the number of available observations per panel, i.e. \eqn{T_i}, is used as weigh
 \eqn{\rho} is calculated as a weighted mean of panel-specific estimates, where the number of available
 observations per panel minus one, i.e. \eqn{T_i - 1}, is used as weight.
 }
+\section{Diagnostic tests}{
+
+
+The tests of package \code{lmtest}, such as \code{\link[lmtest]{dwtest}},
+\code{\link[lmtest]{bgtest}} and \code{\link[lmtest]{bptest}}, do not use the
+residuals of the model they are given. They take the model matrix and the
+response from the components \code{x} and \code{y} of the object and
+re-estimate the model by ordinary least squares. Since those components hold
+the transformed data, the tests describe the estimated model and not the
+original one. The residuals they obtain are the residuals of
+\code{\link{summary.prais}}, so that \code{dwtest} reports the Durbin-Watson
+statistic of the transformed model together with a p-value.
+
+For panel data the components are not added, because the tests difference the
+residuals over all observations at once, which mixes the last observation of a
+panel with the first observation of the next one. The tests then fall back on
+the model frame, which holds the original data, and their results do not refer
+to the estimated model. \code{\link{summary.prais}} reports a Durbin-Watson
+statistic that respects the panels instead.
+}
+
 \examples{
 # Generate an artificial sample
 set.seed(1234567)

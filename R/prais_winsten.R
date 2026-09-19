@@ -62,6 +62,29 @@
 #' \item{contrasts}{the contrasts used, if the model contains factors.}
 #' \item{index}{a character specifying the ID and time variables. Only added if
 #' panel data were used.}
+#' \item{x}{the model matrix after the Prais-Winsten transformation. Only added
+#' if the data are a single time series.}
+#' \item{y}{the response after the Prais-Winsten transformation. Only added if
+#' the data are a single time series.}
+#'
+#' @section Diagnostic tests:
+#'
+#' The tests of package \code{lmtest}, such as \code{\link[lmtest]{dwtest}},
+#' \code{\link[lmtest]{bgtest}} and \code{\link[lmtest]{bptest}}, do not use the
+#' residuals of the model they are given. They take the model matrix and the
+#' response from the components \code{x} and \code{y} of the object and
+#' re-estimate the model by ordinary least squares. Since those components hold
+#' the transformed data, the tests describe the estimated model and not the
+#' original one. The residuals they obtain are the residuals of
+#' \code{\link{summary.prais}}, so that \code{dwtest} reports the Durbin-Watson
+#' statistic of the transformed model together with a p-value.
+#'
+#' For panel data the components are not added, because the tests difference the
+#' residuals over all observations at once, which mixes the last observation of a
+#' panel with the first observation of the next one. The tests then fall back on
+#' the model frame, which holds the original data, and their results do not refer
+#' to the estimated model. \code{\link{summary.prais}} reports a Durbin-Watson
+#' statistic that respects the panels instead.
 #'
 #' @references
 #' Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.
@@ -389,6 +412,21 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
       names_mod <- c(names_mod, index[2])
     }
     names(result$model) <- names_mod
+  }
+
+  # The tests of package 'lmtest', such as 'dwtest', 'bgtest' and 'bptest', do not
+  # use the residuals of the model they are given. They take the model matrix and
+  # the response from components 'x' and 'y' and re-estimate the model by OLS. If
+  # those components are absent, both are taken from the model frame, which holds
+  # the original data, so that the tests would describe the untransformed model
+  # and never see the correction for serial correlation. The transformed data of
+  # the final iteration are therefore added. They are omitted for panel data,
+  # because the tests difference the residuals over all observations at once,
+  # which mixes the last observation of a panel with the first observation of the
+  # next one.
+  if (!panel) {
+    result$x <- x_temp
+    result$y <- c(y_temp)
   }
 
   class(result) <- "prais"
