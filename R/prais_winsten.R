@@ -453,16 +453,16 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
 
   if (panel) {
     result$index <- index
-    names_mod <- names(result$model)
-    if (!index[1] %in% names(result$model)) {
-      result$model <- cbind(result$model, data[, index[1]])
-      names_mod <- c(names_mod, index[1])
+    # The columns are assigned instead of appended with 'cbind', which builds a
+    # new data frame and drops the 'terms' attribute of the model frame. Without
+    # it the frame is no longer recognised as a model frame, and 'model.matrix'
+    # evaluates the variables of the formula against it again, which fails for a
+    # term such as 'log(x)' whose source column is not part of the frame.
+    for (id in index) {
+      if (!id %in% names(result$model)) {
+        result$model[[id]] <- data[[id]]
+      }
     }
-    if (!index[2] %in% names(result$model)) {
-      result$model <- cbind(result$model, data[, index[2]])
-      names_mod <- c(names_mod, index[2])
-    }
-    names(result$model) <- names_mod
   }
 
   # The tests of package 'lmtest', such as 'dwtest', 'bgtest' and 'bptest', do not

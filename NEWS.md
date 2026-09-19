@@ -68,6 +68,17 @@ respects the panels instead.
 * The Prais-Winsten transformation is applied to all panels at once instead of
 one panel at a time, which allocated a copy of the involved rows for every panel.
 The results are unchanged.
+* Fixed `summary.prais` and the covariance matrices `vcovHC.prais` and
+`vcovPC.prais` for panel models whose formula contains a transformed term, such
+as `log(x)` or `poly(x, 2)`, whose source column is not itself part of the model
+frame. They failed with "object 'x' not found". The ID and time variables were
+appended to the model frame with `cbind`, which returns a new data frame and
+drops its `terms` attribute, so the frame was no longer recognised as a model
+frame and `model.matrix` evaluated the variables of the formula against it again
+instead of taking the columns it already holds. The variables are now assigned as
+columns, which leaves the attributes of the frame intact. Single time series were
+not affected, and neither were terms such as `factor(id)` that refer to a
+variable of the index, because that column had just been appended.
 
 # prais 1.2.0
 

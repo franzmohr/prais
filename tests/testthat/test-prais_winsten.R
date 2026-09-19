@@ -56,6 +56,35 @@ test_that("panel models contain the ID and time variables in the model frame", {
   expect_identical(pw$model$time, ordered$time)
 })
 
+test_that("the model frame of a panel model keeps its terms attribute", {
+  data <- ar1_panel(n_group = 3, n_time = 10)
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"))
+
+  # Appending the index variables must not turn the model frame into a plain
+  # data frame, because 'model.matrix' would then evaluate the variables of the
+  # formula against it again instead of taking the columns it already holds
+  expect_s3_class(attr(pw$model, "terms"), "terms")
+  expect_identical(attr(pw$model, "terms"), pw$terms)
+})
+
+test_that("panel models support terms whose source column is not in the frame", {
+  data <- ar1_panel(n_group = 3, n_time = 10)
+  data$log_x <- log(data$x)
+  pw <- fit_quietly(y ~ log(x), data = data, index = c("id", "time"))
+  # The same model with the transformation applied beforehand, which does not
+  # depend on the model frame being recognised as one
+  plain <- fit_quietly(y ~ log_x, data = data, index = c("id", "time"))
+
+  expect_identical(colnames(stats::model.matrix(pw$terms, pw$model)),
+                   c("(Intercept)", "log(x)"))
+  expect_equal(unname(pw$coefficients), unname(plain$coefficients))
+  expect_equal(unname(summary(pw)$coefficients),
+               unname(summary(plain)$coefficients))
+  expect_equal(unname(vcovHC(pw)), unname(vcovHC(plain)))
+  expect_equal(unname(vcovPC(pw)), unname(vcovPC(plain)))
+  expect_equal(unname(confint(pw)), unname(confint(plain)))
+})
+
 test_that("argument 'index' is validated", {
   data <- ar1_sample(n = 40)
   expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time", "x")),
