@@ -1,8 +1,8 @@
 ---
-title: "Estimating models with AR(1) errors"
+title: "Prais-Winsten estimator with AR(1) errors"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Estimating models with AR(1) errors}
+  %\VignetteIndexEntry{Prais-Winsten estimator with AR(1) errors}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,10 +15,10 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 If the errors of a linear regression follow an AR(1) process, the coefficients of
 ordinary least squares are still unbiased, but they are no longer efficient and
-their standard errors are wrong. The Prais-Winsten estimator corrects for this by
-transforming the data so that the transformed errors are serially uncorrelated,
-and by estimating the coefficients and the autocorrelation of the errors in turn
-until the latter converges.
+their standard errors are wrong. The Prais-Winsten estimator (Prais and Winsten, 1954)
+corrects for this by transforming the data so that the transformed errors are
+serially uncorrelated, and by estimating the coefficients and the autocorrelation
+of the errors in turn until the latter converges.
 
 The estimator assumes that the regressors are *strictly exogenous*. A model that
 contains a lagged dependent variable does not satisfy this, and its estimates
@@ -82,7 +82,8 @@ It is worth comparing the result with ordinary least squares.
 ols <- lm(lchnimp ~ lchempi + lgas + lrtwex + befile6 + affile6 + afdec6,
           data = barium)
 
-round(cbind("OLS" = coef(ols), "PW" = coef(pw),
+round(cbind("OLS" = coef(ols),
+            "PW" = coef(pw),
             "SE (OLS)" = sqrt(diag(vcov(ols))),
             "SE (PW)" = sqrt(diag(vcov(pw)))), 4)
 ```
