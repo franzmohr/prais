@@ -1,5 +1,20 @@
 # prais 1.2.0.9000
 
+* `prais_winsten` accepts a fitted panel model of class `plm` in place of its
+arguments `formula`, `data` and `index`, which are taken from the model (#11).
+Since the estimator obtains all its estimates by ordinary least squares, only
+models that were estimated with `model = "pooling"` are supported, and the within
+and the random effects model are rejected with a message that points at the dummy
+variables of the formula, because their own transformation does not leave the
+AR(1) structure of the errors intact. The data are obtained by evaluating the
+`data` argument of the call of the model, so the object it refers to must still be
+available. The model frame of the fitted model cannot be used instead, because its
+columns are named after the terms of the formula, so that a term such as
+`factor(id)` or `log(x)` could not be evaluated again. If the data are a
+`pdata.frame`, the time variable is turned back into a number, since the index of
+a `pdata.frame` is stored as factors, which order the periods but do not carry the
+distances between them that the transformation of a gap requires. Thanks to Julian
+Jäcker for the request.
 * Gaps in the time variable are taken into account by the Prais-Winsten
 transformation. Two observations of a panel that lie *k* periods apart are
 correlated by *rho^k* under an AR(1) process, so an observation whose predecessor
@@ -43,6 +58,15 @@ a model (#13). The methods are registered when `broom` is loaded, so `broom`
 remains a suggested package and the generics are not re-exported, unlike in the
 version of the extension that was part of release 1.1.3. Since delayed registration requires
 R (>= 3.6.0), the minimum version of R was raised accordingly.
+* `predict.prais` gained the arguments `se.fit`, `interval` and `level`, so that
+the standard errors and the confidence interval of the predicted conditional mean
+can be obtained (#10). They are based on the covariance matrix of `vcov.prais` and
+the quantiles of the *t* distribution with the residual degrees of freedom of the
+model, so they agree with the standard errors of `summary.prais` and the intervals
+of `confint.prais`. Prediction intervals for an individual observation are not
+available, because their variance would depend on the serial correlation of the
+error of the predicted period, which the predictions do not use. The default
+result is unchanged. Thanks to Angel Paternina for the request.
 * Added `vcov.prais`, which returns the covariance matrix of the coefficients
 that the standard errors of `summary.prais` are based on. Functions that obtain
 the covariance matrix from a model, such as `lmtest::coeftest`, previously
