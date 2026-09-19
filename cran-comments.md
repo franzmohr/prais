@@ -44,10 +44,10 @@ for the tests of the reverse dependency.
 
 ## Test environments
 local: Windows 11, R 4.6.1
-GitHub Actions: ubuntu 24.04 (R-devel, R-release, R-oldrel-1), macOS (R-release),
+ubuntu 24.04 (R-devel, R-release, R-oldrel-1)
+macOS (R-release)
 windows (R-release)
-
-TODO before submission: run win-builder (R-release, R-devel).
+win-builder (R-release, R-devel)
 
 ## R CMD check results
 
