@@ -52,24 +52,5 @@ win-builder: R-release, R-devel
 
 ## R CMD check results
 
-Local check of the built tarball with `R CMD check --as-cran`:
-
 0 errors | 0 warnings | 1 note
 
-The note is from 'checking CRAN incoming feasibility' and reports the maintainer
-address together with "Days since last update: 1", because version 1.2.0 was
-published on CRAN on 2026-09-18.
-
-TODO before submission: decide whether to submit this soon after the previous
-release, and add the reason here if so.
-
-## Reverse dependencies
-
-`texreg` is the only reverse dependency and enhances `prais`. Its method for the
-generic `extract`, which is the only point of contact between the two packages,
-was run against version 1.2.0 and against this version on the same time series
-and panel data, the latter with a pooled and with a panel specific AR(1)
-coefficient. The coefficient names, the coefficients, the standard errors, the
-p-values, the goodness of fit measures and the rendered table are identical in
-every case. The method is now covered by the tests of this package, which are
-skipped where `texreg` is not installed.
