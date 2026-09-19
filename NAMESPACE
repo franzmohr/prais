@@ -3,6 +3,7 @@
 S3method(broom::augment,prais)
 S3method(broom::glance,prais)
 S3method(broom::tidy,prais)
+S3method(confint,prais)
 S3method(predict,prais)
 S3method(print,prais)
 S3method(print,summary.prais)

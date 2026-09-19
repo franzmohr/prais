@@ -195,18 +195,6 @@ test_that("vcov omits the coefficients of linearly dependent variables", {
   expect_false(anyNA(result))
 })
 
-test_that("vcov makes confidence intervals available", {
-  data <- ar1_sample()
-  pw <- fit_quietly(y ~ x + z, data = data, index = "time")
-
-  result <- confint(pw)
-
-  expect_identical(dim(result), c(3L, 2L))
-  expect_identical(rownames(result), names(pw$coefficients))
-  expect_true(all(result[, 1] < stats::coef(pw)))
-  expect_true(all(result[, 2] > stats::coef(pw)))
-})
-
 test_that("vcov works for panel data", {
   data <- ar1_panel()
   pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"))

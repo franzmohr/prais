@@ -14,9 +14,10 @@
 #' @param ... not used.
 #'
 #' @details The estimates, standard errors, test statistics and p-values are those
-#' of \code{\link{summary.prais}}. The confidence intervals are based on the
-#' \emph{t} distribution with the residual degrees of freedom of the model, so they
-#' agree with the reported p-values. Coefficients of linearly dependent variables
+#' of \code{\link{summary.prais}}. The confidence intervals are those of
+#' \code{\link{confint.prais}}, which are based on the \emph{t} distribution with
+#' the residual degrees of freedom of the model, so they agree with the reported
+#' p-values. Coefficients of linearly dependent variables
 #' are \code{NA} and are omitted, as in \code{summary.prais}.
 #'
 #' @return A \code{\link[tibble]{tibble}} with one row per coefficient and the
@@ -51,7 +52,8 @@
 #'   broom::tidy(pw, conf.int = TRUE)
 #' }
 #'
-#' @seealso \code{\link{glance.prais}}, \code{\link{augment.prais}}
+#' @seealso \code{\link{glance.prais}}, \code{\link{augment.prais}},
+#' \code{\link{confint.prais}}
 #' @exportS3Method broom::tidy
 tidy.prais <- function(x, conf.int = FALSE, conf.level = .95, ...) {
   coeffs <- summary(x)$coefficients
@@ -79,11 +81,11 @@ tidy.prais <- function(x, conf.int = FALSE, conf.level = .95, ...) {
     if (conf.level <= 0 | conf.level >= 1) {
       stop("Argument 'conf.level' must be between 0 and 1.")
     }
-    # The quantile of the t distribution is used, so that the intervals agree
-    # with the p-values of the summary
-    q <- stats::qt(1 - (1 - conf.level) / 2, x$df.residual)
-    result$conf.low <- result$estimate - q * result$std.error
-    result$conf.high <- result$estimate + q * result$std.error
+    # The intervals are obtained from 'confint.prais', so that both report the
+    # same values
+    ci <- stats::confint(x, level = conf.level)
+    result$conf.low <- unname(ci[result$term, 1])
+    result$conf.high <- unname(ci[result$term, 2])
   }
 
   return(.as_tibble(result))

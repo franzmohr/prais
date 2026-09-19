@@ -24,6 +24,7 @@ BugReports: https://github.com/franzmohr/prais/issues
 Collate:
     'augment.prais.R'
     'broom.R'
+    'confint.prais.R'
     'data.R'
     'glance.prais.R'
     'prais-package.R'

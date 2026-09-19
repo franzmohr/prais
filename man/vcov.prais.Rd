@@ -53,5 +53,6 @@ confint(pw)
 
 }
 \seealso{
-\code{\link{vcovHC.prais}}, \code{\link{vcovPC.prais}}
+\code{\link{vcovHC.prais}}, \code{\link{vcovPC.prais}},
+\code{\link{confint.prais}}
 }

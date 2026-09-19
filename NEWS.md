@@ -13,9 +13,14 @@ version of the extension that was part of release 1.1.3. Since delayed registrat
 R (>= 3.6.0), the minimum version of R was raised accordingly.
 * Added `vcov.prais`, which returns the covariance matrix of the coefficients
 that the standard errors of `summary.prais` are based on. Functions that obtain
-the covariance matrix from a model, such as `confint` and `lmtest::coeftest`,
-previously failed with "no applicable method for 'vcov'" and now work without
-passing the matrix explicitly.
+the covariance matrix from a model, such as `lmtest::coeftest`, previously
+failed with "no applicable method for 'vcov'" and now work without passing the
+matrix explicitly.
+* Added `confint.prais`. The intervals are based on the *t* distribution with the
+residual degrees of freedom of the model, so they agree with the p-values of
+`summary.prais` and with the intervals of `tidy`. Without the method they would
+be obtained by `confint.default`, which uses the quantiles of the normal
+distribution and is therefore too narrow in small samples.
 * The Prais-Winsten transformation is applied to all panels at once instead of
 one panel at a time, which allocated a copy of the involved rows for every panel.
 The results are unchanged.

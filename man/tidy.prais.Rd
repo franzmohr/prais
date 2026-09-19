@@ -37,9 +37,10 @@ installed to use it.
 }
 \details{
 The estimates, standard errors, test statistics and p-values are those
-of \code{\link{summary.prais}}. The confidence intervals are based on the
-\emph{t} distribution with the residual degrees of freedom of the model, so they
-agree with the reported p-values. Coefficients of linearly dependent variables
+of \code{\link{summary.prais}}. The confidence intervals are those of
+\code{\link{confint.prais}}, which are based on the \emph{t} distribution with
+the residual degrees of freedom of the model, so they agree with the reported
+p-values. Coefficients of linearly dependent variables
 are \code{NA} and are omitted, as in \code{summary.prais}.
 }
 \examples{
@@ -66,5 +67,6 @@ if (requireNamespace("broom", quietly = TRUE)) {
 
 }
 \seealso{
-\code{\link{glance.prais}}, \code{\link{augment.prais}}
+\code{\link{glance.prais}}, \code{\link{augment.prais}},
+\code{\link{confint.prais}}
 }

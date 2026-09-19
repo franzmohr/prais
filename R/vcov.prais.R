@@ -40,7 +40,8 @@
 #' vcov(pw)
 #' confint(pw)
 #'
-#' @seealso \code{\link{vcovHC.prais}}, \code{\link{vcovPC.prais}}
+#' @seealso \code{\link{vcovHC.prais}}, \code{\link{vcovPC.prais}},
+#' \code{\link{confint.prais}}
 #' @export
 vcov.prais <- function(object, ...) {
   s <- summary(object)
