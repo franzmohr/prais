@@ -70,6 +70,45 @@ pooled <- plm(inv ~ value + capital, data = Grunfeld,
 summary(prais_winsten(pooled, panelwise = TRUE, rhoweight = "T1"))
 ```
 
+## Confidence intervals and predictions
+
+`confint` gives confidence intervals for the coefficients. They are based on the
+*t* distribution with the residual degrees of freedom of the model, so they agree
+with the p-values that `summary` reports.
+
+```{r confint}
+confint(pw)
+```
+
+`vcov` returns the covariance matrix of the coefficients those standard errors
+come from. Functions that obtain the covariance matrix from a model, such as
+`lmtest::coeftest`, therefore work without being passed a matrix explicitly.
+
+```{r vcov}
+sqrt(diag(vcov(pw)))
+```
+
+`predict` returns the conditional mean of the model. Its standard errors and
+confidence intervals describe that mean and come from the same covariance matrix,
+so they agree with `confint`. The AR(1) structure of the errors is not used, which
+is why intervals for an individual observation are not available.
+
+```{r predict-interval}
+head(predict(pw, interval = "confidence"))
+```
+
+With `se.fit = TRUE` the standard errors are returned alongside the predictions,
+together with the residual degrees of freedom and the residual standard error.
+
+```{r predict-se}
+fcst <- predict(pw, se.fit = TRUE)
+
+head(fcst$se.fit)
+```
+
+Argument `newdata` predicts for observations that were not part of the estimation.
+The variables of the formula do not have to be transformed beforehand.
+
 ## Robust standard errors
 
 ### White's estimator
@@ -107,6 +146,34 @@ Obtain PCSE by using all observations that can be matched by period between two 
 
 ```{r}
 coeftest(x, vcov. = vcovPC(x, pairwise = TRUE))
+```
+
+## Tidy model output
+
+Methods for the generics `tidy`, `glance` and `augment` of package
+[broom](https://cran.r-project.org/package=broom) summarise the coefficients, the
+goodness of fit and the fitted values in tidy data frames. They are the interface
+through which packages for publishable regression output, such as `gtsummary` and
+`modelsummary`, obtain the results of a model. `broom` has to be installed to use
+them.
+
+```{r broom, message = FALSE}
+library(broom)
+
+tidy(pw, conf.int = TRUE)
+```
+
+```{r glance}
+glance(pw)
+```
+
+`glance` also reports the AR(1) coefficient and the Durbin-Watson statistics of
+the original and the transformed model. All three are `NA` if the model was
+estimated with `panelwise = TRUE`, because there is one coefficient per panel in
+that case.
+
+```{r augment}
+augment(pw)
 ```
 
 ## Citation
