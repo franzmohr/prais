@@ -162,3 +162,54 @@ test_that("vcovPC is correct for panels that begin in different periods", {
                  unname(reference$pcse), tolerance = 1e-6)
   }
 })
+
+test_that("vcov reproduces the standard errors of the summary", {
+  data <- ar1_sample()
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time")
+  names_coef <- names(pw$coefficients)
+
+  result <- vcov(pw)
+
+  expect_identical(dim(result), c(3L, 3L))
+  expect_identical(dimnames(result), list(names_coef, names_coef))
+  expect_equal(sqrt(diag(result)), summary(pw)$coefficients[, "Std. Error"])
+  expect_equal(result, t(result))
+})
+
+test_that("vcov equals the semirobust estimator of type 'const'", {
+  data <- ar1_sample()
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time")
+
+  expect_equal(vcov(pw), vcovHC(pw, type = "const"))
+})
+
+test_that("vcov omits the coefficients of linearly dependent variables", {
+  data <- ar1_sample(n = 60)
+  data$x2 <- data$x
+  pw <- fit_quietly(y ~ x + x2, data = data, index = "time")
+
+  result <- vcov(pw)
+
+  expect_identical(dimnames(result), list(c("(Intercept)", "x"),
+                                          c("(Intercept)", "x")))
+  expect_false(anyNA(result))
+})
+
+test_that("vcov makes confidence intervals available", {
+  data <- ar1_sample()
+  pw <- fit_quietly(y ~ x + z, data = data, index = "time")
+
+  result <- confint(pw)
+
+  expect_identical(dim(result), c(3L, 2L))
+  expect_identical(rownames(result), names(pw$coefficients))
+  expect_true(all(result[, 1] < stats::coef(pw)))
+  expect_true(all(result[, 2] > stats::coef(pw)))
+})
+
+test_that("vcov works for panel data", {
+  data <- ar1_panel()
+  pw <- fit_quietly(y ~ x, data = data, index = c("id", "time"))
+
+  expect_equal(sqrt(diag(vcov(pw))), summary(pw)$coefficients[, "Std. Error"])
+})

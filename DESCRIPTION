@@ -10,17 +10,22 @@ Authors@R:
     )
 Description: The Prais-Winsten estimator (Prais & Winsten, 1954) takes into account AR(1) serial correlation of the errors in a linear regression model. The procedure recursively estimates the coefficients and the error autocorrelation of the specified model until sufficient convergence of the AR(1) coefficient is attained.
 License: GPL (>= 2)
-Depends: R (>= 3.2.0), sandwich, pcse
+Depends: R (>= 3.6.0), sandwich, pcse
 Imports: 
     stats
 Suggests: 
+    broom,
     haven,
     lmtest,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tibble
 URL: https://github.com/franzmohr/prais
 BugReports: https://github.com/franzmohr/prais/issues
 Collate:
+    'augment.prais.R'
+    'broom.R'
     'data.R'
+    'glance.prais.R'
     'prais-package.R'
     'prais_winsten.R'
     'predict.prais.R'
@@ -28,6 +33,8 @@ Collate:
     'summary.prais.R'
     'print.summary.prais.R'
     'pw_transform.R'
+    'tidy.prais.R'
+    'vcov.prais.R'
     'vcovHC.R'
     'vcovPC.R'
 LazyData: true

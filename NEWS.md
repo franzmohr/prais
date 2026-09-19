@@ -1,5 +1,21 @@
 # prais 1.2.0.9000
 
+* Added methods for the generics `tidy`, `glance` and `augment` of package
+`broom`, which summarise the coefficients, the goodness of fit and the fitted
+values of an estimated model in tidy data frames. `glance` also reports the AR(1)
+coefficient and the Durbin-Watson statistics, which are `NA` if the model was
+estimated with `panelwise = TRUE`, because there is one coefficient per panel in
+that case. The generics are the interface through which packages for publishable
+regression output, such as `gtsummary` and `modelsummary`, obtain the results of
+a model (#13). The methods are registered when `broom` is loaded, so `broom`
+remains a suggested package and the generics are not re-exported, unlike in the
+version of the extension that was part of release 1.1.3. Since delayed registration requires
+R (>= 3.6.0), the minimum version of R was raised accordingly.
+* Added `vcov.prais`, which returns the covariance matrix of the coefficients
+that the standard errors of `summary.prais` are based on. Functions that obtain
+the covariance matrix from a model, such as `confint` and `lmtest::coeftest`,
+previously failed with "no applicable method for 'vcov'" and now work without
+passing the matrix explicitly.
 * The Prais-Winsten transformation is applied to all panels at once instead of
 one panel at a time, which allocated a copy of the involved rows for every panel.
 The results are unchanged.
