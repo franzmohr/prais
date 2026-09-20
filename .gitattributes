@@ -1,0 +1,5 @@
+# The scripts below are run by bash, inside the Linux CI container and as a git
+# hook, so they must keep LF endings even when checked out on Windows.
+*.sh text eol=lf
+.github/hooks/* text eol=lf
+.github/docker/Dockerfile text eol=lf

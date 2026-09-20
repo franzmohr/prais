@@ -1,0 +1,4 @@
+# The CI image only needs DESCRIPTION to resolve dependencies; the sources
+# themselves are bind-mounted when the container runs.
+*
+!DESCRIPTION

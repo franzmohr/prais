@@ -10,3 +10,5 @@ README.Rmd
 ^CITATION\.cff$
 ^\.claude$
 ^CLAUDE\.md$
+^\.dockerignore$
+^\.gitattributes$
