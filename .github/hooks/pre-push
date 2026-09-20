@@ -14,6 +14,42 @@ fi
 
 repo_root=$(git rev-parse --show-toplevel)
 
+# Git names the refs that are about to be pushed on standard input, as
+#   <local ref> <local sha> <remote ref> <remote sha>
+# A deleted ref has an all-zero local sha and carries no commits, so a push that
+# only deletes branches has nothing to check and must not build the image. The
+# checks run against the working tree rather than against the commits
+# themselves, which only describes the push if the pushed ref is the checked out
+# HEAD, so anything else is pointed out before the run.
+saw_ref=0
+to_check=0
+pushes_head=0
+head_sha=$(git rev-parse HEAD 2>/dev/null || echo "")
+while read -r local_ref local_sha remote_ref remote_sha; do
+  saw_ref=1
+  case "$local_sha" in
+    "" | *[!0]*) ;;
+    *) continue ;;
+  esac
+  to_check=1
+  if [ "$local_sha" = "$head_sha" ]; then
+    pushes_head=1
+  fi
+done
+
+# Without any ref on standard input the hook was not called by a push, in which
+# case the checks are run rather than skipped
+if [ "$saw_ref" = "1" ] && [ "$to_check" = "0" ]; then
+  echo "pre-push: nothing but deletions is being pushed, so there is nothing to check." >&2
+  exit 0
+fi
+
+if [ "$to_check" = "1" ] && [ "$pushes_head" = "0" ]; then
+  echo "pre-push: the commits being pushed are not the checked out HEAD." >&2
+  echo "          The checks run against the working tree, so they describe that and" >&2
+  echo "          not what is about to be pushed." >&2
+fi
+
 if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
   echo "pre-push: Docker is not available, so the CI checks cannot be run locally." >&2
   echo "          Start Docker, or push with SKIP_DOCKER_CHECK=1 if you know what you are doing." >&2
