@@ -65,6 +65,10 @@ A list of class \code{"prais"} containing the following components:
 \item{df.residual}{the residual degrees of freedom.}
 \item{call}{the matched call.}
 \item{terms}{the terms object used.}
+\item{qr}{the QR decomposition of the model matrix of the Prais-Winsten
+transformed model, as \code{\link[stats]{lm.fit}} returned it. It is the
+decomposition the covariance matrices are obtained from, and not one of the
+original data.}
 \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
 \item{xlevels}{a record of the levels of the factors used in fitting.}
 \item{contrasts}{the contrasts used, if the model contains factors.}

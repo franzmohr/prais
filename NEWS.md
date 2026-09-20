@@ -1,23 +1,3 @@
-# prais 1.3.0.9000
-
-* The estimate of *rho* is bounded to the interval \[-1, 1\] in every case. The
-bound was only applied to the panel-specific estimates of `panelwise = TRUE`,
-while the estimate of the usual case was left as the regression of the residuals
-on their lag returned it. A value outside the interval makes the scale of the
-first observation of a panel, *(1 - rho^2)^(1 / 2)*, complex, so that the
-observation became `NaN` and was silently dropped from the estimation, although
-the documentation stated that the estimates are bounded. Errors that follow an
-explosive process are enough to reach that path.
-* `vcovPC` reduces the periods and the panels of the observations to the rows
-that the transformation produced. The residuals were matched to the full set of
-observations by position, so that a dropped row shifted them to the wrong panel
-and period and the covariances were computed from mismatched residuals, which
-only showed as a warning about a recycled vector.
-* Argument `index` of `prais_winsten` defaults to `NULL`, so that it can be
-omitted for data whose observations are already in the order of the periods.
-Passing `NULL` has always been supported, but leaving the argument out raised
-the missing-argument error of R.
-
 # prais 1.3.0
 
 * `prais_winsten` accepts a fitted panel model of class `plm` in place of its
@@ -128,6 +108,29 @@ instead of taking the columns it already holds. The variables are now assigned a
 columns, which leaves the attributes of the frame intact. Single time series were
 not affected, and neither were terms such as `factor(id)` that refer to a
 variable of the index, because that column had just been appended.
+* The estimate of *rho* is bounded to the interval \[-1, 1\] in every case. The
+bound was only applied to the panel-specific estimates of `panelwise = TRUE`,
+while the estimate of the usual case was left as the regression of the residuals
+on their lag returned it. A value outside the interval makes the scale of the
+first observation of a panel, *(1 - rho^2)^(1 / 2)*, complex, so that the
+observation became `NaN` and was silently dropped from the estimation, although
+the documentation stated that the estimates are bounded. Errors that follow an
+explosive process are enough to reach that path.
+* `vcovPC` reduces the periods and the panels of the observations to the rows
+that the transformation produced. The residuals were matched to the full set of
+observations by position, so that a dropped row shifted them to the wrong panel
+and period and the covariances were computed from mismatched residuals, which
+only showed as a warning about a recycled vector.
+* Argument `index` of `prais_winsten` defaults to `NULL`, so that it can be
+omitted for data whose observations are already in the order of the periods.
+Passing `NULL` has always been supported, but leaving the argument out raised
+the missing-argument error of R.
+* A model that contains no pair of consecutive observations is rejected with a
+message. The AR(1) coefficient is obtained by regressing the residuals on the
+residuals of the preceding period, which such a model cannot provide. It was
+reached by a model without coefficients estimated from a single observation,
+which keeps its residual degrees of freedom, and failed inside `lm.fit` with
+"incompatible dimensions".
 
 # prais 1.2.0
 

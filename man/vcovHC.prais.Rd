@@ -26,6 +26,31 @@ the Prais-Winsten estimator. The weighting schemes specified by type are analogo
 \code{\link[sandwich]{vcovHC}} in package \href{https://cran.r-project.org/package=sandwich}{sandwich}
 with the caveat that only \code{"const"}, \code{"HC0"} and \code{"HC1"} are available.
 }
+\examples{
+# Generate an artificial sample
+set.seed(1234567)
+n <- 100
+x <- sample(20:40, n, replace = TRUE)
+rho <- .5
+
+# AR(1) errors
+u <- rnorm(n, 0, 5)
+for (i in 2:n) {
+  u[i] <- u[i] + rho * u[i - 1]
+}
+pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
+
+# Estimate
+pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
+
+# The covariance matrix of the transformed model, which 'summary' reports
+vcovHC(pw, type = "const")
+
+# Heteroskedasticity consistent alternatives
+vcovHC(pw, type = "HC0")
+sqrt(diag(vcovHC(pw, type = "HC1")))
+
+}
 \seealso{
 \code{\link[sandwich]{vcovHC}}
 }

@@ -58,3 +58,29 @@ linear model and the Prais-Winsten estimator.}
 \description{
 Summary method for class \code{"prais"}.
 }
+\examples{
+# Generate an artificial sample
+set.seed(1234567)
+n <- 100
+x <- sample(20:40, n, replace = TRUE)
+rho <- .5
+
+# AR(1) errors
+u <- rnorm(n, 0, 5)
+for (i in 2:n) {
+  u[i] <- u[i] + rho * u[i - 1]
+}
+pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
+
+# Estimate
+pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
+
+# The coefficient table, the AR(1) coefficient and the Durbin-Watson
+# statistics of the original and of the transformed model
+summary(pw)
+
+# The standard errors are those of 'vcov'
+all.equal(sqrt(diag(vcov(pw))),
+          summary(pw)$coefficients[, "Std. Error"])
+
+}

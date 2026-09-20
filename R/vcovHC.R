@@ -14,6 +14,30 @@
 #' @return An object of class "matrix" containing the estimate of the asymptotic covariance matrix
 #' of coefficients.
 #'
+#' @examples
+#' # Generate an artificial sample
+#' set.seed(1234567)
+#' n <- 100
+#' x <- sample(20:40, n, replace = TRUE)
+#' rho <- .5
+#'
+#' # AR(1) errors
+#' u <- rnorm(n, 0, 5)
+#' for (i in 2:n) {
+#'   u[i] <- u[i] + rho * u[i - 1]
+#' }
+#' pw_sample <- data.frame("x" = x, "y" = 10 + 1.5 * x + u, "time" = 1:n)
+#'
+#' # Estimate
+#' pw <- prais_winsten(y ~ x, data = pw_sample, index = "time")
+#'
+#' # The covariance matrix of the transformed model, which 'summary' reports
+#' vcovHC(pw, type = "const")
+#'
+#' # Heteroskedasticity consistent alternatives
+#' vcovHC(pw, type = "HC0")
+#' sqrt(diag(vcovHC(pw, type = "HC1")))
+#'
 #' @seealso \code{\link[sandwich]{vcovHC}}
 #' @export
 vcovHC.prais <- function(x, type = c("const", "HC1", "HC0"), ...) {

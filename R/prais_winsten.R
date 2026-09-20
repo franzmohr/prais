@@ -98,6 +98,10 @@
 #' \item{df.residual}{the residual degrees of freedom.}
 #' \item{call}{the matched call.}
 #' \item{terms}{the terms object used.}
+#' \item{qr}{the QR decomposition of the model matrix of the Prais-Winsten
+#' transformed model, as \code{\link[stats]{lm.fit}} returned it. It is the
+#' decomposition the covariance matrices are obtained from, and not one of the
+#' original data.}
 #' \item{model}{the original model frame, i.e., before the Prais-Winsten transformation.}
 #' \item{xlevels}{a record of the levels of the factors used in fitting.}
 #' \item{contrasts}{the contrasts used, if the model contains factors.}
@@ -379,8 +383,27 @@ prais_winsten <- function(formula, data, index = NULL, max_iter = 50L, tol = 1e-
       pos_res_lag <- unlist(pos_res_lag, use.names = FALSE)
     }
   } else {
-    pos_res <- 2:n
-    pos_res_lag <- 1:(n - 1)
+    # 'seq_len' is used rather than '2:n' and '1:(n - 1)', which count backwards
+    # and produce the positions 2, 1 and 1, 0 for a single observation
+    pos_res <- seq_len(n)[-1L]
+    pos_res_lag <- seq_len(n - 1L)
+  }
+
+  # rho is obtained by regressing the residuals on the residuals of the
+  # preceding period, for which at least one observation has to have a
+  # predecessor. A model without coefficients keeps its residual degrees of
+  # freedom with a single observation, so the check above does not already rule
+  # this out.
+  n_pairs <- if (panelwise) sum(lengths(pos_res)) else length(unlist(pos_res, use.names = FALSE))
+  if (n_pairs < 1) {
+    stop("The AR(1) coefficient cannot be estimated, because no observation has ",
+         "a predecessor. It is obtained by regressing the residuals on the ",
+         "residuals of the preceding period, so ",
+         if (panel) {
+           "at least one panel has to contain two observations."
+         } else {
+           "at least two observations are required."
+         })
   }
 
   if (panelwise & rhoweight == "none") {

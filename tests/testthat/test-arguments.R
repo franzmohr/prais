@@ -193,3 +193,17 @@ test_that("argument 'index' can be omitted", {
                fit_quietly(y ~ x, data = data, index = NULL)$coefficients)
   expect_null(fit_quietly(y ~ x, data = data)$timeid)
 })
+
+test_that("a model without a pair of consecutive observations is rejected", {
+  data <- ar1_sample()
+
+  # A model without coefficients keeps its residual degrees of freedom with a
+  # single observation, so it reaches the regression of the residuals on their
+  # lag, for which there is no pair
+  expect_error(fit_quietly(y ~ 0, data = data[1, , drop = FALSE], index = "time"),
+               "no observation has a predecessor")
+
+  # The same model is estimated as usual where the observations do have
+  # predecessors
+  expect_error(fit_quietly(y ~ 0, data = data, index = "time"), NA)
+})

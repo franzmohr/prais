@@ -25,6 +25,33 @@ Panel-corrected covariance matrix estimators for models of class \code{"prais"}.
 \code{vcovPC} is a function for estimating a panel-corrected covariance matrix of parameters for
 the Prais-Winsten estimator.
 }
+\examples{
+# Generate an artificial panel with AR(1) errors
+set.seed(1234567)
+n_id <- 8
+n_time <- 25
+rho <- .6
+
+panel <- do.call(rbind, lapply(seq_len(n_id), function(i) {
+  u <- rnorm(n_time, 0, 2)
+  for (j in 2:n_time) {
+    u[j] <- u[j] + rho * u[j - 1]
+  }
+  x <- rnorm(n_time, 10, 3)
+  data.frame(id = i, year = seq_len(n_time), x = x, y = 5 + 2 * x + u)
+}))
+
+# Estimate
+pw <- prais_winsten(y ~ x, data = panel, index = c("id", "year"))
+
+# Panel-corrected standard errors
+sqrt(diag(vcovPC(pw)))
+
+# Match the observations of two panels by period instead of using only the
+# periods that are common to all panels
+sqrt(diag(vcovPC(pw, pairwise = TRUE)))
+
+}
 \references{
 Beck, N. L. and Katz, J. N. (1995): What to do (and not to do) with time-series cross-section data. American Political Science Review 89, 634-647.
 }
