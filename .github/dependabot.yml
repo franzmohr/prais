@@ -10,10 +10,9 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "monthly"
     # The updates arrive as a single pull request instead of one per action, so
-    # that a week of updates costs one run of the checks and one notification.
+    # that a month of updates costs one run of the checks and one notification.
     groups:
       actions:
         patterns:
