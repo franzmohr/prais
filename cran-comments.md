@@ -62,12 +62,18 @@ described above.
 
 ## Test environments
 local: Windows 11, R 4.6.1
-ubuntu 24.04 (R-devel, R-release, R-oldrel-1)
-macOS (R-release)
-windows (R-release)
-win-builder (R-release, R-devel)
+docker: Ubuntu 24.04, R 4.6.1
+GitHub Actions: Ubuntu 24.04 (R-devel, R-release, R-oldrel-1), Windows (R-release)
+
+The macOS runner could not be used for this submission. Its checks stop before
+the package is built, because CRAN currently serves the macOS arm64 binaries
+zstd compressed under a .tgz name, which the installer of the runner cannot
+extract.
 
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
+
+The note reports the number of days since the last update, which the first
+paragraph of these comments explains.
 
