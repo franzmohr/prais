@@ -7,13 +7,15 @@ with AR(1) serially correlated errors. Source lives in `R/`, documentation in
 
 ## Branching workflow
 
-- `main` holds **only the currently released version**. It advances when a
-  release is cut, not during development, so that it stays a reliable pointer to
-  what is on CRAN and archived on Zenodo.
-- `dev` is the integration branch for ongoing development.
-- New work goes on a branch created from `dev`, and is merged back into `dev`.
-  Pull requests target `dev`, never `main`, unless the change *is* a release.
-- Releases are merged from `dev` into `main` and tagged there.
+- `main` **is the development version**. It carries a development version number
+  between releases, such as `1.3.0.9000`.
+- New work goes on a short-lived branch created from `main` and is merged back
+  into `main` when it is finished. Pull requests target `main`.
+- A release is a **tag plus a GitHub release**, not a branch and not a state of
+  `main`. The released version is whatever the tag points at, so nothing is held
+  back from `main` on the grounds that it is unreleased.
+- To cut a release, set the version in `DESCRIPTION`, tag that commit and create
+  the GitHub release from the tag.
 
 ## Common commands
 
