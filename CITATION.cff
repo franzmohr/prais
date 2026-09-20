@@ -3,7 +3,7 @@ message: "If you use this software, please cite it using these metadata."
 type: software
 title: "prais: Prais-Winsten Estimator for AR(1) Serial Correlation"
 abstract: "The Prais-Winsten estimator (Prais & Winsten, 1954) takes into account AR(1) serial correlation of the errors in a linear regression model. The procedure recursively estimates the coefficients and the error autocorrelation of the specified model until sufficient convergence of the AR(1) coefficient is attained."
-version: 1.3.0
+version: 1.3.0-rc1
 date-released: "2026-09-19"
 license: GPL-2.0-or-later
 authors:
