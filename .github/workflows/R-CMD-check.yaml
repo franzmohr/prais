@@ -15,11 +15,20 @@ jobs:
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
+    # CRAN currently serves its macOS arm64 binaries zstd compressed under a
+    # .tgz name, which pkgdepends cannot extract, so pak fails to install the
+    # dependencies before the package is ever checked. The leg is therefore
+    # allowed to fail, so that a problem outside this repository does not turn
+    # the whole run red and mail a failure for it. See
+    # https://github.com/r-lib/pkgdepends/issues/485 and drop the flag together
+    # with 'allow-failure' below once that is released.
+    continue-on-error: ${{ matrix.config.allow-failure || false }}
+
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'release', allow-failure: true}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
