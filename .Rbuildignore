@@ -9,3 +9,4 @@ README.Rmd
 ^data-raw$
 ^CITATION\.cff$
 ^\.claude$
+^CLAUDE\.md$
