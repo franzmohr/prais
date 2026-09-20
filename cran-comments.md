@@ -55,11 +55,6 @@ added to the suggested packages, `knitr` and `rmarkdown` for the new vignette,
 `texreg` for the tests of the reverse dependency and `nlme` for a test that
 compares the estimates with an independent generalised least squares fit.
 
-This release follows 1.2.0 after a short interval. It was prepared before 1.2.0
-was published and it corrects the estimate of *rho* and the panel-corrected
-covariance matrix, which are wrong in the released version for the cases
-described above.
-
 ## Test environments
 local: Windows 11, R 4.6.1
 docker: Ubuntu 24.04, R 4.6.1
@@ -72,8 +67,5 @@ extract.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-The note reports the number of days since the last update, which the first
-paragraph of these comments explains.
+0 errors | 0 warnings | 0 notes
 
