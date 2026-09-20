@@ -1,0 +1,21 @@
+# Keeps the actions that the workflows in .github/workflows use up to date.
+#
+# Dependabot has no ecosystem for the R dependencies of DESCRIPTION, which are
+# resolved from CRAN every time a check runs and are therefore always current,
+# so the actions are all there is to update here. The Dockerfile in
+# .github/docker is not watched either, because its base image is chosen by the
+# R_VERSION build argument rather than by a fixed tag.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # The updates arrive as a single pull request instead of one per action, so
+    # that a week of updates costs one run of the checks and one notification.
+    groups:
+      actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 5
