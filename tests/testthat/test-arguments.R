@@ -135,3 +135,61 @@ test_that("panel specific rho requires two observations per panel", {
   # A pooled estimate only needs the panels that do have a lag
   expect_error(fit_quietly(y ~ x, data = data, index = c("id", "time")), NA)
 })
+
+test_that("the estimate of rho is bounded to the interval [-1, 1]", {
+  # Errors that follow an explosive process push the regression of the residuals
+  # on their lag above one, where the scale of the first observation,
+  # (1 - rho^2)^(1 / 2), would not be real
+  set.seed(1234567)
+  n <- 60
+  u <- numeric(n)
+  e <- rnorm(n)
+  for (i in 2:n) {
+    u[i] <- 1.25 * u[i - 1] + e[i]
+  }
+  data <- data.frame(x = rnorm(n, 30, 5), time = 1:n)
+  data$y <- 10 + u
+
+  pw <- fit_quietly(y ~ x, data = data, index = "time")
+  rho <- pw$rho[NROW(pw$rho), 1]
+
+  expect_true(abs(rho) <= 1)
+  # The first observation is kept, which a scale of NaN would have dropped
+  expect_equal(nrow(pw$x), n)
+  expect_false(anyNA(pw$x))
+  expect_false(anyNA(pw$y))
+  expect_false(anyNA(summary(pw)$coefficients))
+})
+
+test_that("panel-specific estimates of rho are bounded to the interval [-1, 1]", {
+  set.seed(1234567)
+  n_time <- 30
+  panel <- NULL
+  for (i in 1:3) {
+    u <- numeric(n_time)
+    e <- rnorm(n_time)
+    for (j in 2:n_time) {
+      u[j] <- 1.25 * u[j - 1] + e[j]
+    }
+    panel <- rbind(panel, data.frame(id = i, time = 1:n_time,
+                                     x = rnorm(n_time, 30, 5), y = 10 + u))
+  }
+
+  for (weight in c("none", "T", "T1")) {
+    pw <- fit_quietly(y ~ x, data = panel, index = c("id", "time"),
+                      panelwise = TRUE, rhoweight = weight)
+    rho <- pw$rho[NROW(pw$rho), ]
+    expect_true(all(abs(rho) <= 1))
+  }
+})
+
+test_that("argument 'index' can be omitted", {
+  data <- ar1_sample()
+
+  expect_error(fit_quietly(y ~ x, data = data), NA)
+  # Without an index the observations are taken in the order of the data, which
+  # is what passing NULL has always done
+  expect_equal(fit_quietly(y ~ x, data = data)$coefficients,
+               fit_quietly(y ~ x, data = data, index = NULL)$coefficients)
+  expect_null(fit_quietly(y ~ x, data = data)$timeid)
+})

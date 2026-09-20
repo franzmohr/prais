@@ -14,7 +14,9 @@
 #' @param index a character vector specifying the ID and time variables. If only one variable
 #' is provided, it is assumed to be the time variable and the data will be reordered
 #' accordingly. The specified variables must not contain \code{NA} values. Must not be
-#' specified if \code{formula} is a model of class \code{"plm"}.
+#' specified if \code{formula} is a model of class \code{"plm"}. If it is
+#' \code{NULL}, which is the default, the observations are taken in the order in
+#' which they appear in \code{data}.
 #' @param max_iter integer specifying the maximum number of allowed iterations. Default is 50.
 #' @param tol numeric specifying the maximum absolute difference between the estimator of \eqn{rho}
 #' in the current and the previous iteration that has to be attained to reach convergence.
@@ -164,7 +166,7 @@
 #' }
 #'
 #'@export
-prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
+prais_winsten <- function(formula, data, index = NULL, max_iter = 50L, tol = 1e-6,
                           twostep = FALSE, panelwise = FALSE, rhoweight = c("none", "T", "T1"), ...){
 
   cl <- match.call()
@@ -409,11 +411,7 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
       for (j in 1:n_groups) {
         rho_lm <- stats::lm.fit(x = matrix(res[pos_res_lag[[j]]]), y = matrix(res[pos_res[[j]]]))
         rho_last[j] <- rho[j]
-        if (abs(rho_lm$coefficients[1]) > 1) {
-          rho[j] <- ifelse(rho_lm$coefficients[1] < -1, -1, 1)
-        } else {
-          rho[j] <- rho_lm$coefficients[1]
-        }
+        rho[j] <- .pw_bound_rho(rho_lm$coefficients[1])
         rho_stats[j, i + 1] <- rho[j]
       }
     } else {
@@ -422,16 +420,11 @@ prais_winsten <- function(formula, data, index, max_iter = 50L, tol = 1e-6,
         rho <- 0
         for (j in 1:n_groups) {
           rho_lm <- stats::lm.fit(x = matrix(res[pos_res_lag[[j]]]), y = matrix(res[pos_res[[j]]]))
-          if (abs(rho_lm$coefficients[1]) > 1) {
-            rho_lm$coefficients[1] <- ifelse(rho_lm$coefficients[1] < -1, -1, 1)
-          } else {
-            rho_lm$coefficients[1] <- rho_lm$coefficients[1]
-          }
-          rho <- rho + rho_lm$coefficients[1] * wrho[j]
+          rho <- rho + .pw_bound_rho(rho_lm$coefficients[1]) * wrho[j]
         }
       } else {
         rho_lm <- stats::lm.fit(x = matrix(res[pos_res_lag]), y = matrix(res[pos_res]))
-        rho <- rho_lm$coefficients[1]
+        rho <- .pw_bound_rho(rho_lm$coefficients[1])
       }
       rho_stats <- append(rho_stats, rho)
     }

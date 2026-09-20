@@ -8,7 +8,7 @@
 prais_winsten(
   formula,
   data,
-  index,
+  index = NULL,
   max_iter = 50L,
   tol = 1e-06,
   twostep = FALSE,
@@ -31,7 +31,9 @@ is a model of class \code{"plm"}.}
 \item{index}{a character vector specifying the ID and time variables. If only one variable
 is provided, it is assumed to be the time variable and the data will be reordered
 accordingly. The specified variables must not contain \code{NA} values. Must not be
-specified if \code{formula} is a model of class \code{"plm"}.}
+specified if \code{formula} is a model of class \code{"plm"}. If it is
+\code{NULL}, which is the default, the observations are taken in the order in
+which they appear in \code{data}.}
 
 \item{max_iter}{integer specifying the maximum number of allowed iterations. Default is 50.}
 

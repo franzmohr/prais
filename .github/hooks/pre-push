@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Refuse to push unless the GitHub Actions checks pass locally in Docker.
+#
+# Enable this hook once per clone with:
+#   git config core.hooksPath .github/hooks
+#
+# Set SKIP_DOCKER_CHECK=1 (or pass --no-verify) to bypass it deliberately.
+set -euo pipefail
+
+if [ "${SKIP_DOCKER_CHECK:-0}" = "1" ]; then
+  echo "pre-push: SKIP_DOCKER_CHECK=1, skipping the local CI run." >&2
+  exit 0
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+
+if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+  echo "pre-push: Docker is not available, so the CI checks cannot be run locally." >&2
+  echo "          Start Docker, or push with SKIP_DOCKER_CHECK=1 if you know what you are doing." >&2
+  exit 1
+fi
+
+echo "pre-push: running the GitHub Actions checks in Docker before pushing..."
+if ! "${repo_root}/.github/docker/run-checks.sh"; then
+  echo "pre-push: the checks failed; nothing was pushed." >&2
+  exit 1
+fi
+
+echo "pre-push: checks passed."

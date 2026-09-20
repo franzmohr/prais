@@ -21,6 +21,17 @@
   result
 }
 
+# Bounds an estimate of rho to [-1, 1]. The transformation of the first
+# observation of a panel scales it by (1 - rho^2)^(1 / 2), which is not real
+# outside that interval, so that the observation would become NaN and would
+# silently be dropped from the estimation. At a bound the first observation
+# becomes zero and does not contribute to the estimates, so that the estimator
+# effectively becomes the Cochrane-Orcutt estimator. Missing values are passed
+# through, so that they reach the check that reports them.
+.pw_bound_rho <- function(rho) {
+  pmin(pmax(rho, -1), 1)
+}
+
 # Applies the Prais-Winsten transformation to all panels at once. Working on one
 # panel at a time allocates a copy of the involved rows for every panel, which
 # dominated the run time of samples with many panels.

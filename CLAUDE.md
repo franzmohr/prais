@@ -37,6 +37,33 @@ Full package check, as CRAN runs it:
 devtools::check()
 ```
 
+## Before pushing
+
+Nothing is pushed to GitHub before the checks that GitHub Actions would run have
+been run locally in a Docker image and have passed:
+
+```bash
+.github/docker/run-checks.sh
+```
+
+The image is defined in `.github/docker/Dockerfile` and mirrors the
+`ubuntu-latest` / R release leg of `R-CMD-check.yaml`: it installs the
+dependencies with pak and runs `R CMD check` with the same arguments
+(`--no-manual --as-cran`, built with `--compact-vignettes=gs+qpdf`), failing on
+warnings. `run-checks.sh coverage` additionally reports test coverage, as
+`test-coverage.yaml` does. `R_VERSION=4.4.1 .github/docker/run-checks.sh`
+approximates the oldrel leg of the matrix.
+
+The `pre-push` hook in `.github/hooks/` enforces this. Enable it once per clone
+with:
+
+```bash
+git config core.hooksPath .github/hooks
+```
+
+Bypass it only deliberately, with `SKIP_DOCKER_CHECK=1 git push` or
+`git push --no-verify`.
+
 ## Conventions
 
 - Documentation in `man/` and `NAMESPACE` are generated — edit the roxygen
