@@ -43,19 +43,26 @@ vcovPC.prais <- function(x, pairwise = FALSE, ...) {
     index <- x$index
     groups <- .pw_groups(x, nrow(mod))
     steps <- .pw_steps(x, groups)
-    n_group <- length(groups)
 
     pw_data <- .pw_transform(mod, rho = rho, intercept = intercept, groups = groups,
                              steps = steps)
-    pw_data <- stats::na.omit(pw_data)
+
+    # Rows that the transformation could not produce are dropped. The periods and
+    # the panels of the observations are reduced to the same rows, because the
+    # residuals are matched to them by position further below, where a shorter
+    # vector of residuals would be recycled against the full set of observations
+    # and would attribute them to the wrong panel and period.
+    complete <- stats::complete.cases(pw_data)
+    pw_data <- pw_data[complete, , drop = FALSE]
+    positions <- mt_model[complete, index, drop = FALSE]
 
     x_pw <- as.matrix(pw_data[, x_names])
     pw_fit <- x_pw %*% coeffs
     res <- c(pw_data[, 1] - pw_fit)
     cov.unscaled <- .pw_cov_unscaled(x_pw)
 
-    positions <- mt_model[, index]
     group_names <- as.character(unique(positions[, 1]))
+    n_group <- length(group_names)
     timetable <- unique(positions[, 2])
     timetable <- timetable[order(timetable)]
     timetable <- data.frame(timetable)

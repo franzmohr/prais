@@ -201,3 +201,21 @@ test_that("vcov works for panel data", {
 
   expect_equal(sqrt(diag(vcov(pw))), summary(pw)$coefficients[, "Std. Error"])
 })
+
+test_that("vcovPC keeps the residuals with their panel if rows are dropped", {
+  panel <- ar1_panel()
+  pw <- fit_quietly(y ~ x, data = panel, index = c("id", "time"))
+
+  # A value of rho outside [-1, 1] makes the scale of the first observation of a
+  # panel NaN, so that the transformation leaves those rows incomplete and they
+  # are dropped. The estimator bounds rho, so the component is set directly to
+  # reach that path. The periods of the observations have to be reduced to the
+  # same rows, because the residuals are matched to them by position.
+  pw$rho[NROW(pw$rho), 1] <- 1.5
+
+  expect_warning(result <- vcovPC(pw), NA)
+  names_coef <- names(pw$coefficients)
+  expect_identical(dimnames(result), list(names_coef, names_coef))
+  expect_false(anyNA(result))
+  expect_equal(result, t(result))
+})
