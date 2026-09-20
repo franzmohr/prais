@@ -344,8 +344,11 @@ citation("prais")
 
 Releases are archived on Zenodo. To cite the package as a whole, rather
 than one particular version, use the concept DOI
-[10.5281/zenodo.22837936](https://doi.org/10.5281/zenodo.22837936),
-which always resolves to the most recent release.
+[10.5281/zenodo.22837936](https://doi.org/10.5281/zenodo.22837936). It
+resolves to the most recently archived version, which may be a release
+candidate rather than the version on CRAN. To cite exactly what was
+used, take the DOI of that version from the [Zenodo
+record](https://doi.org/10.5281/zenodo.22837936) instead.
 
 ## References
 
